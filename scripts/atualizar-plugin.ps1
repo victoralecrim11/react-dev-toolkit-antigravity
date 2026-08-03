@@ -10,8 +10,8 @@
     ou reabra o workspace depois de atualizar.
 
 .EXAMPLE
-    pwsh scripts/atualizar-plugin.ps1
-    pwsh scripts/atualizar-plugin.ps1 -LimparCache
+    powershell scripts/atualizar-plugin.ps1
+    powershell scripts/atualizar-plugin.ps1 -LimparCache
 #>
 [CmdletBinding()]
 param(

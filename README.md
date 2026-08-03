@@ -99,7 +99,7 @@ O workflow valida antes de taguear. Para pular o bump num commit so de documenta
 
 ```shell
 # Windows
-pwsh scripts/atualizar-plugin.ps1
+powershell scripts/atualizar-plugin.ps1
 
 # macOS / Linux
 ./scripts/atualizar-plugin.sh
