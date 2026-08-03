@@ -1,0 +1,75 @@
+name: Bump da versao do plugin
+
+# A cada push na main, sincroniza a versao no plugin.json, README.md e
+# manual.html e cria a tag. Isso e o que faz um commit chegar aos usuarios:
+# o Antigravity compara o campo "version" para detectar atualizacao.
+#
+# Nao reage ao commit que o proprio bot cria, para nao entrar em loop de push.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "manual.html"
+      - "LICENSE"
+      - ".github/**"
+      - "scripts/**"
+  workflow_dispatch:
+    inputs:
+      part:
+        description: "Parte da versao a incrementar"
+        type: choice
+        default: patch
+        options: [patch, minor, major]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump-version
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sincronizar a versao nos arquivos
+        id: bump
+        run: |
+          python3 scripts/bump-version.py --${{ inputs.part || 'patch' }} | tee bump.log
+          echo "version=$(grep -oP '::set-version::\K.*' bump.log)" >> "$GITHUB_OUTPUT"
+          rm bump.log
+
+      - name: Checagens proprias do pacote
+        run: python3 scripts/validate-plugin.py
+
+      - name: Commitar e taguear
+        env:
+          V: ${{ steps.bump.outputs.version }}
+        run: |
+          if git diff --quiet; then
+            echo "versao nao mudou, nada a commitar" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plugin.json README.md manual.html
+          git commit -m "chore(release): v$V
+
+          Bump automatico da versao no plugin.json, README.md e manual.html."
+          git tag -f "v$V"
+          git push
+          git push -f origin "v$V"
+          {
+            echo "### Publicado v$V"
+            echo ""
+            echo '```'
+            echo "agy plugin install https://github.com/victoralecrim11/plugin-react-dev-toolkit-antigravity.git"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

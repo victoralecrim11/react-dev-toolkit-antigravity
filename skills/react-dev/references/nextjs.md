@@ -1,4 +1,4 @@
-﻿# Next.js
+# Next.js
 Use junto de `./skills/react-dev/references/react-core.md` em Next.js. Prefira App Router e TypeScript.
 
 - Server Components são o padrão para leitura e composição que não exigem interatividade; use `"use client"` somente em fronteiras que usam estado, eventos ou APIs do navegador.

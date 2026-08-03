@@ -1,4 +1,4 @@
-﻿# Project Builder
+# Project Builder
 
 Escolha o modo automaticamente: Discovery para ideia vaga; Planner para roadmap; Architect para decisões de estrutura; Builder para implementação; Reviewer para melhoria; Tutor para explicações.
 
