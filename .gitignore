@@ -1,0 +1,14 @@
+# Bytecode do Python gerado ao rodar o dashboard-server.py
+__pycache__/
+*.py[cod]
+
+# Dados locais do Project Hub. Sao especificos da sua maquina e podem conter
+# o token do GitHub -- nunca devem ir para o repositorio.
+projetos-data.json
+dashboard-config.json
+
+# Sistema operacional / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Manual · React Dev Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-950 text-slate-100">
+    <main class="max-w-4xl mx-auto p-8">
+      <div class="flex flex-wrap items-baseline justify-between gap-3">
+        <p class="text-blue-400 font-semibold">MANUAL INTERATIVO</p>
+        <p class="text-xs text-slate-500 font-mono">v1.3.12</p>
+      </div>
+      <h1 class="text-4xl font-bold mt-2">React Dev Hub</h1>
+      <p class="text-slate-400 mt-3">
+        Uma base prática para construir, evoluir, publicar e acompanhar
+        projetos React, Next.js e React Native/Expo.
+      </p>
+
+      <!-- Alternador de prefixo -->
+      <section
+        class="mt-8 p-5 bg-slate-900 rounded-xl border border-slate-800"
+        aria-labelledby="ctx-title"
+      >
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 id="ctx-title" class="font-bold">Onde você está usando?</h2>
+            <p class="mt-1 text-sm text-slate-400">
+              No Claude Code os comandos de plugin são prefixados pelo nome do
+              plugin. Escolha aqui e todos os comandos deste manual se ajustam.
+            </p>
+          </div>
+          <div
+            class="flex rounded-lg overflow-hidden border border-slate-700 shrink-0"
+            role="group"
+            aria-label="Contexto de uso"
+          >
+            <button
+              type="button"
+              data-ctx="claude"
+              class="ctx-btn px-4 py-2 text-sm font-semibold transition"
+            >
+              Claude Code
+            </button>
+            <button
+              type="button"
+              data-ctx="codex"
+              class="ctx-btn px-4 py-2 text-sm font-semibold transition"
+            >
+              Codex
+            </button>
+          </div>
+        </div>
+        <p class="mt-4 text-sm text-slate-300">
+          Prefixo ativo:
+          <code
+            id="prefix-echo"
+            class="bg-slate-950 px-2 py-1 rounded text-blue-300 font-mono"
+          ></code>
+          <span id="prefix-note" class="text-slate-500"></span>
+        </p>
+      </section>
+
+      <!-- Ciclo -->
+      <h2 class="text-2xl font-bold mt-10">O ciclo de desenvolvimento</h2>
+      <p class="text-slate-400 mt-2 text-sm">
+        As frequências são diferentes: configurar é por máquina, criar projeto é
+        por projeto, o resto é recorrente.
+      </p>
+      <section class="grid md:grid-cols-2 gap-4 mt-5">
+        <article class="p-5 bg-slate-900 rounded-xl">
+          <h3 class="font-bold">1. Configure</h3>
+          <p class="mt-2 text-slate-300">
+            <code class="cmd" data-cmd="setup"></code> registra seu nível e a
+            pasta-base, sobe o Project Hub e entrega este manual. É por
+            máquina, não por projeto — e pode rodar de novo quando quiser
+            trocar o perfil.
+          </p>
+        </article>
+        <article class="p-5 bg-slate-900 rounded-xl">
+          <h3 class="font-bold">2. Construa — por projeto</h3>
+          <p class="mt-2 text-slate-300">
+            <code class="cmd" data-cmd="criar-projeto"></code> lê o perfil salvo
+            e pergunta só o que é do projeto. Depois,
+            <code class="cmd" data-cmd="criar-componente"></code>. Todo código é
+            TypeScript e explica as decisões.
+          </p>
+        </article>
+        <article class="p-5 bg-slate-900 rounded-xl">
+          <h3 class="font-bold">3. Organize</h3>
+          <p class="mt-2 text-slate-300">
+            <code class="cmd" data-cmd="arquitetura"></code> define pastas,
+            estado e responsabilidades na medida do projeto — sem antecipar
+            complexidade que ele ainda não precisa.
+          </p>
+        </article>
+        <article class="p-5 bg-slate-900 rounded-xl">
+          <h3 class="font-bold">4. Revise</h3>
+          <p class="mt-2 text-slate-300">
+            <code class="cmd" data-cmd="review"></code> verifica qualidade,
+            acessibilidade, erros, performance e dívida técnica sem mudar
+            comportamento sem motivo.
+          </p>
+        </article>
+        <article class="p-5 bg-slate-900 rounded-xl">
+          <h3 class="font-bold">5. Publique</h3>
+          <p class="mt-2 text-slate-300">
+            <code class="cmd" data-cmd="deploy"></code> inspeciona a stack em
+            silêncio, recomenda o provedor, valida o build e só então publica.
+            <span class="text-amber-300"
+              >Se o build falhar, o deploy para.</span
+            >
+          </p>
+        </article>
+        <article class="p-5 bg-slate-900 rounded-xl">
+          <h3 class="font-bold">6. Acompanhe</h3>
+          <p class="mt-2 text-slate-300">
+            <code class="cmd" data-cmd="dashboard"></code> reabre o Project Hub
+            local em <code>127.0.0.1:8766</code>. Os dados ficam em JSON no seu
+            computador.
+          </p>
+        </article>
+      </section>
+
+      <!-- Referência -->
+      <h2 class="text-2xl font-bold mt-10">Referência rápida</h2>
+      <div class="mt-4 overflow-x-auto rounded-xl border border-slate-800">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-slate-900 text-slate-400">
+            <tr>
+              <th class="p-3 font-semibold">Comando</th>
+              <th class="p-3 font-semibold">Frequência</th>
+              <th class="p-3 font-semibold">O que faz</th>
+            </tr>
+          </thead>
+          <tbody id="cmd-table" class="divide-y divide-slate-800"></tbody>
+        </table>
+      </div>
+
+      <!-- Deploy em detalhe -->
+      <section class="mt-8 p-5 border border-blue-900 rounded-xl">
+        <h2 class="font-bold">
+          O fluxo do <code class="cmd" data-cmd="deploy"></code>
+        </h2>
+        <p class="mt-2 text-sm text-slate-400">
+          Comando de fim de ciclo. A ordem é obrigatória e existe para não
+          publicar build quebrado nem vazar credencial.
+        </p>
+        <ol class="mt-4 space-y-2 text-slate-300 text-sm">
+          <li>
+            <span class="font-semibold text-blue-300">1. Analisar</span> — lê
+            <code>package.json</code>, lockfiles e configs para descobrir a
+            stack. Não pergunta nada ainda.
+          </li>
+          <li>
+            <span class="font-semibold text-blue-300">2. Configurar</span> —
+            detecta o gerenciador de pacotes, confere se os
+            <code>.env</code> estão no <code>.gitignore</code> e localiza os
+            scripts de build e lint.
+          </li>
+          <li>
+            <span class="font-semibold text-blue-300">3. Validar</span> —
+            instala, roda lint e build. Falhou? Informa o arquivo e a possível
+            correção, e não segue.
+          </li>
+          <li>
+            <span class="font-semibold text-blue-300">4. Confirmar</span> —
+            apresenta a recomendação e espera você escolher o provedor.
+          </li>
+          <li>
+            <span class="font-semibold text-blue-300">5. Deploy</span> — checa a
+            CLI do provedor, faz login se preciso, publica.
+          </li>
+          <li>
+            <span class="font-semibold text-blue-300">6. Informar</span> —
+            relatório com provedor, stack, status, URL e CI/CD configurado.
+          </li>
+        </ol>
+        <div class="mt-5 grid sm:grid-cols-2 gap-3 text-sm">
+          <div class="p-3 bg-slate-900 rounded-lg">
+            <p class="font-semibold text-slate-200">Provedores mapeados</p>
+            <p class="mt-1 text-slate-400">
+              Vercel · Netlify · Cloudflare Pages · GitHub Pages · Expo EAS ·
+              GitHub Actions
+            </p>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-lg">
+            <p class="font-semibold text-slate-200">Recomendação por stack</p>
+            <p class="mt-1 text-slate-400">
+              Next.js → Vercel · Vite/SPA → Vercel, Netlify, Cloudflare, GH
+              Pages · Expo mobile → EAS
+            </p>
+          </div>
+        </div>
+        <p class="mt-4 text-sm text-amber-300">
+          Credenciais nunca vão para o código. Elas ficam no painel do provedor
+          ou em <strong>Settings → Secrets and variables → Actions</strong>.
+        </p>
+      </section>
+
+      <!-- Skills automáticas -->
+      <section class="mt-4 p-5 border border-slate-800 rounded-xl bg-slate-900">
+        <h2 class="font-bold">As skills agem sozinhas</h2>
+        <p class="mt-3 text-slate-300 text-sm">
+          Além dos comandos que você digita, o pacote traz uma skill de conhecimento que o
+          assistente aciona por conta própria conforme o assunto da conversa. Elas
+          não aparecem no menu <code>/</code> de propósito — são base de
+          conhecimento, não ações:
+          <code>react-dev</code>, que carrega o arquivo de referência certo conforme o assunto. Você não precisa invocá-las.
+        </p>
+        <p class="mt-3 text-slate-400 text-sm">
+          O <code class="cmd" data-cmd="deploy"></code> é o oposto: só você pode
+          disparar. Publicar em produção não parte do assistente por conta própria.
+        </p>
+      </section>
+
+      <!-- Perfil -->
+      <section class="mt-4 p-5 border border-blue-900 rounded-xl">
+        <h2 class="font-bold">Seu perfil fica salvo</h2>
+        <p class="mt-3 text-slate-300">
+          O nível de calibração é informado no
+          <code class="cmd" data-cmd="setup"></code> e persiste em
+          <code>dashboard-config.json</code>. Todos os comandos leem esse valor
+          para ajustar a profundidade das explicações e o teto de complexidade
+          arquitetural — nenhum deles repergunta. Para trocar de nível, rode
+          <code class="cmd" data-cmd="setup"></code> outra vez: ele mostra o que
+          está salvo e altera só o que você pedir.
+        </p>
+      </section>
+
+      <!-- Decisões padrão -->
+      <section class="mt-4 p-5 border border-blue-900 rounded-xl">
+        <h2 class="font-bold">Decisões padrão</h2>
+        <ul class="list-disc pl-5 mt-3 text-slate-300">
+          <li>React: TypeScript, Hooks, Context/Zustand e TanStack Query.</li>
+          <li>
+            Next.js: App Router, Server Components e Server Actions quando
+            adequados.
+          </li>
+          <li>Mobile: Expo, Expo Router, Hermes e Reanimated.</li>
+          <li>
+            Deploy: build validado antes de publicar, segredos fora do
+            repositório.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Instalação -->
+      <section class="mt-4 p-5 border border-slate-800 rounded-xl">
+        <h2 class="font-bold">Instalação</h2>
+        <div class="mt-4 space-y-4 text-sm">
+          <div>
+            <p class="font-semibold text-slate-200">Claude Code (CLI)</p>
+            <pre
+              class="mt-2 p-3 bg-slate-950 rounded-lg overflow-x-auto text-blue-300 font-mono text-xs"
+            >
+/plugin marketplace add victoralecrim11/plugin-react-dev-toolkit
+/plugin install plugin-react-dev-toolkit@react-dev-marketplace
+/reload-plugins</pre
+            >
+          </div>
+          <div>
+            <p class="font-semibold text-slate-200">Claude Desktop</p>
+            <p class="mt-1 text-slate-400">
+              Botão <strong>+</strong> ao lado do prompt →
+              <strong>Plugins</strong> → <strong>Add plugin</strong>. O
+              navegador lista os marketplaces já configurados, então adicione o
+              marketplace uma vez pela CLI e depois gerencie pelo desktop.
+            </p>
+          </div>
+          <div>
+            <p class="font-semibold text-slate-200">Codex</p>
+            <p class="mt-1 text-slate-400">
+              O marketplace padrão fica em
+              <code>.agents/plugins/marketplace.json</code> e aponta para a
+              raiz do repositório. Adicione a raiz como marketplace local e
+              reinicie o aplicativo.
+            </p>
+          </div>
+        </div>
+        <p class="mt-4 text-xs text-slate-500">
+          O <code>README.md</code> do repositório traz as formas alternativas —
+          URL git, tag fixada, URL direta do <code>marketplace.json</code> e
+          sessões cloud.
+        </p>
+      </section>
+
+      <p class="mt-8 text-xs text-slate-600">
+        React Dev Hub v1.3.12 · plugin-react-dev-toolkit · MIT
+      </p>
+    </main>
+
+    <script>
+      var COMMANDS = [
+        [
+          "setup",
+          "uma vez por máquina",
+          "Perfil, nível de calibração, pasta-base e instalação do Project Hub. Idempotente."
+        ],
+        [
+          "criar-projeto",
+          "uma vez por projeto",
+          "Discovery do MVP e scaffolding TypeScript com estrutura de pastas e próximos passos."
+        ],
+        [
+          "criar-componente",
+          "recorrente",
+          "Componentes e hooks pequenos, acessíveis e tipados, com testes."
+        ],
+        [
+          "arquitetura",
+          "recorrente",
+          "Organização de pastas, estado e responsabilidades proporcional ao projeto."
+        ],
+        [
+          "review",
+          "recorrente",
+          "Code review didático: tipagem, erros, acessibilidade, performance e dívida técnica."
+        ],
+        [
+          "deploy",
+          "fim de ciclo",
+          "Detecta a stack, valida o build e publica no provedor ideal, ou configura CI/CD."
+        ],
+        [
+          "dashboard",
+          "recorrente",
+          "Reabre o Project Hub local em 127.0.0.1:8766."
+        ]
+      ];
+
+      var PREFIXES = {
+        claude: {
+          prefix: "/plugin-react-dev-toolkit:",
+          note: " — o prefixo evita conflito entre plugins instalados."
+        },
+        codex: {
+          prefix: "/",
+          note: " — no Codex os comandos não são prefixados."
+        }
+      };
+
+      var ACTIVE = "bg-blue-600 text-white";
+      var IDLE = "bg-slate-800 text-slate-300 hover:bg-slate-700";
+      var ctx = "claude";
+
+      function buildTable() {
+        var tbody = document.getElementById("cmd-table");
+        tbody.innerHTML = "";
+        COMMANDS.forEach(function (row) {
+          var tr = document.createElement("tr");
+
+          var td1 = document.createElement("td");
+          td1.className = "p-3 align-top whitespace-nowrap";
+          var code = document.createElement("code");
+          code.className = "cmd text-blue-300 font-mono";
+          code.setAttribute("data-cmd", row[0]);
+          td1.appendChild(code);
+
+          var td2 = document.createElement("td");
+          td2.className = "p-3 align-top text-slate-400 whitespace-nowrap";
+          td2.textContent = row[1];
+
+          var td3 = document.createElement("td");
+          td3.className = "p-3 align-top text-slate-300";
+          td3.textContent = row[2];
+
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tr.appendChild(td3);
+          tbody.appendChild(tr);
+        });
+      }
+
+      function render() {
+        var cfg = PREFIXES[ctx];
+        var nodes = document.querySelectorAll(".cmd");
+        for (var i = 0; i < nodes.length; i++) {
+          nodes[i].textContent = cfg.prefix + nodes[i].getAttribute("data-cmd");
+        }
+        document.getElementById("prefix-echo").textContent = cfg.prefix;
+        document.getElementById("prefix-note").textContent = cfg.note;
+
+        var btns = document.querySelectorAll(".ctx-btn");
+        for (var j = 0; j < btns.length; j++) {
+          var on = btns[j].getAttribute("data-ctx") === ctx;
+          btns[j].className =
+            "ctx-btn px-4 py-2 text-sm font-semibold transition " +
+            (on ? ACTIVE : IDLE) +
+            (j > 0 ? " border-l border-slate-700" : "");
+          btns[j].setAttribute("aria-pressed", on ? "true" : "false");
+        }
+      }
+
+      document.querySelectorAll(".ctx-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          ctx = btn.getAttribute("data-ctx");
+          render();
+        });
+      });
+
+      buildTable();
+      render();
+    </script>
+  </body>
+</html>

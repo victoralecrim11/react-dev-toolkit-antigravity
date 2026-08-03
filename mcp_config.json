@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "vercel": { "type": "http", "url": "https://mcp.vercel.com/" },
+    "higgsfield": {
+      "type": "http",
+      "url": "https://mcp.higgsfield.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer COLOQUE_SUA_CHAVE_AQUI"
+      }
+    }
+  }
+}

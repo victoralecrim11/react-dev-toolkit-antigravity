@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+    <title>React Dev Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen">
+    <!-- Banner de diagnóstico: fica visível se o JS quebrar ou se HTML e servidor estiverem em versões diferentes -->
+    <div id="diagBanner" class="hidden bg-rose-900 text-rose-100 px-4 py-3 text-sm font-mono"></div>
+
+    <main class="max-w-7xl mx-auto p-6">
+      <header class="flex flex-wrap justify-between gap-4 mb-8">
+        <div>
+          <p class="text-blue-400 font-semibold">PROJECT HUB</p>
+          <h1 class="text-3xl font-bold">React Dev Hub</h1>
+          <p class="text-slate-400">Projetos, design system, reviews e evolução arquitetural.</p>
+          <p class="text-xs text-slate-600 mt-1">HTML <span id="htmlVersion"></span> · servidor <span id="serverVersion">?</span></p>
+        </div>
+        <div class="flex gap-2 items-start flex-wrap">
+          <button type="button" data-action="new-project" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-medium">+ Projeto</button>
+          <button type="button" data-action="new-component" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg font-medium">+ Componente</button>
+          <button type="button" data-action="new-review" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg font-medium">+ Review</button>
+          <button type="button" data-action="open-scan" class="bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded-lg font-medium">🔍 Escanear pasta</button>
+          <button type="button" data-action="open-github" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg font-medium">🐙 GitHub</button>
+          <button type="button" data-action="open-config" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg font-medium" title="Configurações">⚙️</button>
+        </div>
+      </header>
+
+      <section id="metrics" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8"></section>
+      <nav class="flex gap-2 border-b border-slate-800 mb-6">
+        <button type="button" data-tab="projects" class="tab px-3 py-2">Projetos</button
+        ><button type="button" data-tab="components" class="tab px-3 py-2">Componentes</button
+        ><button type="button" data-tab="reviews" class="tab px-3 py-2">Reviews</button>
+      </nav>
+      <section id="content"></section>
+    </main>
+
+    <!-- Modal genérico: projetos / componentes / reviews -->
+    <dialog id="modal" class="bg-slate-900 text-slate-100 rounded-xl p-0 w-full max-w-lg backdrop:bg-black/70">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 id="modalTitle" class="text-xl font-bold"></h2>
+          <button type="button" data-action="close" data-target="modal" class="text-slate-400 text-xl leading-none">×</button>
+        </div>
+        <div id="formWarn" class="hidden mb-3 text-sm bg-rose-950/60 border border-rose-800 text-rose-200 rounded p-2"></div>
+        <div id="fields" class="space-y-3"></div>
+        <p class="text-xs text-slate-500 mt-3"><span class="text-rose-400">*</span> obrigatório. Campos vazios ficam marcados no card do projeto.</p>
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" data-action="close" data-target="modal" class="px-3 py-2">Cancelar</button>
+          <button type="button" data-action="save-form" class="bg-blue-600 px-3 py-2 rounded">Salvar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Modal de configurações -->
+    <dialog id="configModal" class="bg-slate-900 text-slate-100 rounded-xl p-0 w-full max-w-lg backdrop:bg-black/70">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Configurações</h2>
+          <button type="button" data-action="close" data-target="configModal" class="text-slate-400 text-xl leading-none">×</button>
+        </div>
+        <div class="space-y-3">
+          <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Perfil do desenvolvedor</p>
+          <label class="block text-sm text-slate-300">Nível de calibração (Beginner / Junior / Mid-Level / Senior)
+            <input id="cfgDevLevel" placeholder="Junior" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded p-2 text-white">
+          </label>
+          <label class="block text-sm text-slate-300">Pasta-base dos projetos
+            <input id="cfgProjectsRoot" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded p-2 text-white">
+          </label>
+          <label class="block text-sm text-slate-300">Plataforma padrão (react / next / expo)
+            <input id="cfgDefaultPlatform" placeholder="react" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded p-2 text-white">
+          </label>
+          <label class="block text-sm text-slate-300">Objetivo padrão (academico / mvp / producao)
+            <input id="cfgDefaultGoal" placeholder="mvp" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded p-2 text-white">
+          </label>
+          <p class="text-xs text-slate-500">Estes valores alimentam a calibração dos comandos e pré-preenchem o cadastro de projetos. Normalmente o <code>/setup</code> os grava, mas você pode ajustar aqui.</p>
+
+          <p class="text-xs uppercase tracking-wide text-slate-500 font-semibold pt-2">Scan e GitHub</p>
+          <label class="block text-sm text-slate-300">Pasta padrão para scan
+            <input id="cfgScanRoot" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded p-2 text-white">
+          </label>
+          <p id="cfgRootMismatch" class="hidden text-xs bg-amber-950/50 border border-amber-800/60 text-amber-200 rounded p-2">
+            A pasta de scan está diferente da pasta-base dos projetos. Se não foi intencional, deixe as duas iguais.
+          </p>
+          <label class="block text-sm text-slate-300">Usuário do GitHub
+            <input id="cfgGithubUsername" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded p-2 text-white">
+          </label>
+          <label class="block text-sm text-slate-300">Token do GitHub (opcional, p/ repos privados e limite maior)
+            <input id="cfgGithubToken" type="password" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded p-2 text-white">
+          </label>
+          <p class="text-xs text-slate-500">O token fica salvo apenas localmente em dashboard-config.json, nunca sai da sua máquina.</p>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" data-action="close" data-target="configModal" class="px-3 py-2">Cancelar</button>
+          <button type="button" data-action="save-config" class="bg-blue-600 px-3 py-2 rounded">Salvar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Modal de scan local -->
+    <dialog id="scanModal" class="bg-slate-900 text-slate-100 rounded-xl p-0 w-full max-w-2xl backdrop:bg-black/70">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Escanear projetos React</h2>
+          <button type="button" data-action="close" data-target="scanModal" class="text-slate-400 text-xl leading-none">×</button>
+        </div>
+        <div class="flex gap-2 mb-4">
+          <input id="scanPath" class="flex-1 bg-slate-800 border border-slate-700 rounded p-2 text-white" placeholder="Caminho da pasta">
+          <button type="button" data-action="run-scan" class="bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded">Buscar</button>
+        </div>
+        <div id="scanResults" class="space-y-2 max-h-96 overflow-y-auto"></div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" data-action="close" data-target="scanModal" class="px-3 py-2">Fechar</button>
+          <button type="button" data-action="import-scan" class="bg-blue-600 px-3 py-2 rounded">Importar selecionados</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Modal de importação GitHub -->
+    <dialog id="githubModal" class="bg-slate-900 text-slate-100 rounded-xl p-0 w-full max-w-2xl backdrop:bg-black/70">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Importar do GitHub</h2>
+          <button type="button" data-action="close" data-target="githubModal" class="text-slate-400 text-xl leading-none">×</button>
+        </div>
+        <div class="flex justify-between items-center gap-2 mb-4">
+          <p class="text-slate-400 text-sm">Selecione os repositórios para importar.</p>
+          <button type="button" data-action="uncheck-github" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded">Desmarcar todos</button>
+        </div>
+        <div id="githubResults" class="space-y-2 max-h-96 overflow-y-auto"></div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" data-action="close" data-target="githubModal" class="px-3 py-2">Fechar</button>
+          <button type="button" data-action="import-github" class="bg-blue-600 px-3 py-2 rounded">Importar selecionados</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Modal de detecção de componentes -->
+    <dialog id="componentScanModal" class="bg-slate-900 text-slate-100 rounded-xl p-0 w-full max-w-2xl backdrop:bg-black/70">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 id="componentScanTitle" class="text-xl font-bold">Detectar componentes</h2>
+          <button type="button" data-action="close" data-target="componentScanModal" class="text-slate-400 text-xl leading-none">×</button>
+        </div>
+        <div id="componentScanResults" class="space-y-2 max-h-96 overflow-y-auto"></div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" data-action="close" data-target="componentScanModal" class="px-3 py-2">Fechar</button>
+          <button type="button" data-action="import-components" class="bg-blue-600 px-3 py-2 rounded">Importar selecionados</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+      const APP_VERSION = "2026-07-28-v7";
+
+      // --- Diagnóstico: nada mais falha em silêncio ---
+      function diag(msg) {
+        const el = document.querySelector("#diagBanner");
+        el.classList.remove("hidden");
+        el.textContent = msg;
+        // Remove o aviso automaticamente após 5 segundos
+        setTimeout(() => {
+          el.classList.add("hidden");
+        }, 5000);
+      }
+      window.addEventListener("error", (e) => diag("Erro de JavaScript: " + e.message + " (linha " + e.lineno + ")"));
+      window.addEventListener("unhandledrejection", (e) => diag("Falha em requisição: " + (e.reason && e.reason.message ? e.reason.message : e.reason)));
+      document.querySelector("#htmlVersion").textContent = APP_VERSION;
+
+      let data = { projects: [], components: [], reviews: [], checklists: {} },
+        tab = "projects", editing = null,
+        config = { scanRoot: "", githubUsername: "", githubToken: "" },
+        scanFound = [], githubFound = [], componentScanFound = [], componentScanProject = null;
+
+      const modal = document.getElementById("modal");
+      const configModal = document.getElementById("configModal");
+      const scanModal = document.getElementById("scanModal");
+      const githubModal = document.getElementById("githubModal");
+      const componentScanModal = document.getElementById("componentScanModal");
+
+      const labels = { projects: "Projetos", components: "Componentes", reviews: "Code review" };
+      const fields = {
+        projects: [
+          ["name", "Nome"], ["path", "Caminho local"], ["platform", "Plataforma (React / Next.js / Expo)"],
+          ["status", "Status"], ["reactVersion", "Versão React"], ["stack", "Stack"],
+          ["level", "Nível (Beginner / Junior / Mid-Level / Senior)"], ["notes", "Notas"],
+          ["repoUrl", "GitHub (usuário/repo)"],
+        ],
+        components: [["name", "Nome"], ["project", "Projeto"], ["category", "Categoria"], ["path", "Caminho"], ["description", "Descrição"]],
+        reviews: [["project", "Projeto"], ["maintainability", "Manutenibilidade (0-100)"], ["summary", "Resumo"], ["debts", "Débitos técnicos (separados por vírgula)"]],
+      };
+
+      // Campos cuja ausência conta como registro incompleto. `notes` e `repoUrl`
+      // ficam fora: é legítimo um projeto não ter notas nem repositório remoto.
+      const PROJECT_LABELS = [
+        ["name", "Nome"], ["path", "Caminho local"], ["platform", "Plataforma"],
+        ["reactVersion", "Versão React"], ["stack", "Stack"], ["level", "Nível"],
+      ];
+      // Sem estes o painel perde funcionalidade (ex.: detectar componentes).
+      const REQUIRED_KEYS = { projects: ["name", "path"], components: ["name", "project"], reviews: ["project"] };
+
+      async function api(url, opt = {}) {
+        const r = await fetch(url, Object.assign({ cache: "no-store" }, opt));
+        const body = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(body.error || ("Servidor respondeu " + r.status + " em " + url));
+        return body;
+      }
+      async function load() { data = await api("/api/data"); render(); }
+      async function loadConfig() {
+        config = await api("/api/config");
+        document.querySelector("#cfgDevLevel").value = config.devLevel || "";
+        document.querySelector("#cfgProjectsRoot").value = config.projectsRoot || "";
+        document.querySelector("#cfgDefaultPlatform").value = config.defaultPlatform || "";
+        document.querySelector("#cfgDefaultGoal").value = config.defaultGoal || "";
+        document.querySelector("#cfgScanRoot").value = config.scanRoot || "";
+        document.querySelector("#cfgGithubUsername").value = config.githubUsername || "";
+        document.querySelector("#cfgGithubToken").value = config.githubToken || "";
+        const norm = (s) => String(s || "").replace(/[\\/]+$/, "").toLowerCase();
+        const mismatch = config.projectsRoot && norm(config.projectsRoot) !== norm(config.scanRoot);
+        document.querySelector("#cfgRootMismatch").classList.toggle("hidden", !mismatch);
+      }
+      async function checkVersion() {
+        try {
+          const v = await api("/api/version");
+          document.querySelector("#serverVersion").textContent = v.version;
+          if (v.version !== APP_VERSION)
+            diag("Versões diferentes: este HTML é " + APP_VERSION + " mas o dashboard-server.py rodando é " + v.version +
+                 ". Você substituiu apenas um dos dois arquivos, ou o servidor está lendo outra pasta: " + (v.root || "?"));
+        } catch (e) {
+          document.querySelector("#serverVersion").textContent = "antigo";
+          diag("O dashboard-server.py em execução é uma versão antiga (não tem /api/version). Substitua o .py e reinicie o servidor.");
+        }
+      }
+
+      function metric(title, value) {
+        return `<div class="bg-slate-900 border border-slate-800 rounded-xl p-4"><p class="text-slate-400 text-sm">${title}</p><p class="text-2xl font-bold">${value}</p></div>`;
+      }
+      function render() {
+        document.querySelectorAll(".tab").forEach((b) => (b.className = "tab px-3 py-2 " + (b.dataset.tab === tab ? "border-b-2 border-blue-400 text-blue-300" : "text-slate-400")));
+        document.querySelector("#metrics").innerHTML =
+          metric("Projetos", data.projects.length) + metric("Componentes", data.components.length) +
+          metric("Reviews", data.reviews.length) + metric("Dívidas", data.reviews.reduce((n, r) => n + (r.debts || []).length, 0));
+        document.querySelector("#content").innerHTML = tab === "projects" ? projects() : tab === "components" ? table("components") : table("reviews");
+      }
+      function escape(s = "") {
+        return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      }
+      function projects() {
+        if (!data.projects.length) return empty("Nenhum projeto registrado.");
+        // Nada de valor-padrao cosmetico aqui. Antes o card mostrava
+        // `p.platform || "React"` e `p.reactVersion || "TypeScript"`, o que
+        // exibia "React · TypeScript" em projetos cujos dois campos estavam
+        // VAZIOS -- o registro parecia completo e o erro so aparecia depois,
+        // ao tentar detectar componentes. Campo vazio agora e visivel.
+        const miss = (v) => `<span class="text-amber-400/70 italic">nao preenchido</span>`;
+        const val = (v) => (String(v ?? "").trim() ? escape(v) : miss());
+        return `<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">${data.projects.map((p) => {
+          const gaps = PROJECT_LABELS.filter(([k]) => !String(p[k] ?? "").trim());
+          return `<article class="bg-slate-900 border ${gaps.length ? "border-amber-800/60" : "border-slate-800"} rounded-xl p-5">
+          <div class="flex justify-between gap-2"><h2 class="font-bold text-lg">${val(p.name)}</h2><span class="text-xs bg-blue-950 text-blue-300 rounded px-2 py-1 whitespace-nowrap h-fit">${escape(p.status || "Em andamento")}</span></div>
+          <p class="text-slate-400 mt-2">${val(p.platform)} · React ${val(p.reactVersion)}</p>
+          <p class="text-sm mt-3">${val(p.stack)}</p>
+          <p class="text-xs mt-2">Nivel: ${val(p.level)}</p>
+          <p class="text-xs text-slate-500 mt-2 break-all">${val(p.path)}</p>
+          ${p.repoUrl ? `<p class="text-xs mt-2"><a href="https://github.com/${escape(p.repoUrl)}" target="_blank" class="text-blue-300 underline">github.com/${escape(p.repoUrl)}</a></p><p id="ghinfo-${escape(p.id)}" class="text-xs text-slate-400 mt-1"></p>` : ""}
+          ${gaps.length ? `<div class="mt-3 text-xs bg-amber-950/50 border border-amber-800/60 text-amber-200 rounded p-2">
+            Faltam ${gaps.length} ${gaps.length === 1 ? "campo" : "campos"}: ${gaps.map(([, l]) => escape(l)).join(", ")}.
+            <button type="button" data-action="edit-project" data-id="${escape(p.id)}" class="underline font-medium">Completar agora</button>
+          </div>` : ""}
+          <div class="mt-4 flex gap-2 flex-wrap">
+            <button type="button" data-action="edit-project" data-id="${escape(p.id)}" class="text-blue-300">Editar</button>
+            <button type="button" data-action="checklist" data-id="${escape(p.id)}" class="text-emerald-300">Checklist</button>
+            <button type="button" data-action="scan-components" data-id="${escape(p.id)}" data-name="${escape(p.name)}" class="text-purple-300">Detectar componentes</button>
+            ${p.repoUrl ? `<button type="button" data-action="github-info" data-id="${escape(p.id)}" data-repo="${escape(p.repoUrl)}" class="text-amber-300">Atualizar GitHub</button>` : ""}
+            <button type="button" data-action="delete" data-type="projects" data-id="${escape(p.id)}" class="text-rose-300">Excluir</button>
+          </div>
+        </article>`; }).join("")}</div>`;
+      }
+      function table(type) {
+        const list = data[type];
+        if (!list.length) return empty("Nenhum registro ainda.");
+        const cols = fields[type].slice(0, 4);
+        return `<div class="overflow-x-auto bg-slate-900 rounded-xl border border-slate-800"><table class="w-full text-left"><thead class="text-slate-400 text-sm"><tr>${cols.map((c) => `<th class="p-3">${c[1]}</th>`).join("")}<th></th></tr></thead><tbody>${list.map((x) => `<tr class="border-t border-slate-800">${cols.map((c) => `<td class="p-3">${escape(Array.isArray(x[c[0]]) ? x[c[0]].join(", ") : x[c[0]])}</td>`).join("")}<td class="p-3 whitespace-nowrap"><button type="button" data-action="edit-item" data-type="${type}" data-id="${escape(x.id)}" class="text-blue-300">Editar</button> <button type="button" data-action="delete" data-type="${type}" data-id="${escape(x.id)}" class="text-rose-300">Excluir</button></td></tr>`).join("")}</tbody></table></div>`;
+      }
+      function empty(t) { return `<div class="p-10 text-center border border-dashed border-slate-700 rounded-xl text-slate-400">${t}</div>`; }
+
+      // Sugestoes para um projeto novo, vindas do perfil salvo pelo /setup.
+      // Evita o campo em branco que passa batido no cadastro.
+      function suggest(type, key) {
+        if (type !== "projects") return "";
+        if (key === "platform") return config.defaultPlatform || "";
+        if (key === "level") return config.devLevel || "";
+        if (key === "status") return config.defaultGoal || "";
+        if (key === "path") return config.projectsRoot ? config.projectsRoot.replace(/[\\/]+$/, "") + "/" : "";
+        return "";
+      }
+      function openForm(type, id) {
+        editing = { type, id };
+        const item = id ? data[type].find((x) => String(x.id) === String(id)) : {};
+        const required = REQUIRED_KEYS[type] || [];
+        document.querySelector("#modalTitle").textContent = (id ? "Editar " : "Novo ") + labels[type];
+        document.querySelector("#fields").innerHTML = fields[type].map(([key, label]) => {
+          const raw = Array.isArray(item && item[key]) ? item[key].join(", ") : (item && item[key]) || "";
+          const value = raw || (id ? "" : suggest(type, key));
+          const req = required.includes(key);
+          return `<label class="block text-sm text-slate-300">${label}${req ? ` <span class="text-rose-400" title="obrigatório">*</span>` : ""}
+            <input data-key="${key}" data-label="${escape(label)}"${req ? ' data-required="1"' : ""} value="${escape(value)}"
+              class="mt-1 w-full bg-slate-800 border ${req && !value ? "border-rose-700" : "border-slate-700"} rounded p-2 text-white"></label>`;
+        }).join("");
+        document.querySelector("#formWarn").classList.add("hidden");
+        modal.showModal();
+      }
+      async function saveForm() {
+        // _replace: true diz ao servidor que este payload e a versao completa do
+        // registro -- campo apagado na tela deve ficar apagado. Chamadas de API
+        // omitem a flag e recebem merge, para nao zerar campos ja preenchidos.
+        const item = { id: editing.id, _replace: true };
+        document.querySelectorAll("#fields [data-key]").forEach((el) => (item[el.dataset.key] = el.value.trim()));
+        const faltando = Array.from(document.querySelectorAll("#fields [data-required]"))
+          .filter((el) => !el.value.trim())
+          .map((el) => el.dataset.label);
+        if (faltando.length) {
+          const warn = document.querySelector("#formWarn");
+          warn.textContent = "Preencha antes de salvar: " + faltando.join(", ") + ".";
+          warn.classList.remove("hidden");
+          document.querySelectorAll("#fields [data-required]").forEach((el) => {
+            el.classList.toggle("border-rose-700", !el.value.trim());
+          });
+          return;
+        }
+        if (editing.type === "reviews") item.debts = item.debts ? item.debts.split(",").map((x) => x.trim()).filter(Boolean) : [];
+        const saved = await api("/api/" + editing.type, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+        modal.close();
+        await load();
+        if (saved && saved.warnings && saved.warnings.length) diag(saved.warnings.join(" | "));
+      }
+      async function remove(type, id) {
+        if (confirm("Excluir este registro?")) { await api("/api/" + type + "/" + id, { method: "DELETE" }); load(); }
+      }
+      async function checklist(id) {
+        const p = data.projects.find((x) => x.id === id), items = data.checklists[id] || {};
+        const base = ["TypeScript estrito configurado", "Estados de erro e loading definidos", "Componentes acessíveis", "Responsabilidades separadas", "Testes proporcionais ao risco", "Estado global justificado"];
+        const result = prompt("Checklist de " + p.name + "\nMarque números concluídos separados por vírgula:\n" + base.map((x, i) => `${i + 1}. ${items[i] ? "✓ " : ""}${x}`).join("\n"));
+        if (result === null) return;
+        const marked = {};
+        result.split(",").forEach((n) => { const i = Number(n.trim()) - 1; if (base[i]) marked[i] = true; });
+        await api("/api/checklists", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ projectId: id, items: marked }) });
+        load();
+      }
+
+      // --- Configurações ---
+      async function saveConfig() {
+        config = await api("/api/config", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            devLevel: document.querySelector("#cfgDevLevel").value.trim(),
+            projectsRoot: document.querySelector("#cfgProjectsRoot").value.trim(),
+            defaultPlatform: document.querySelector("#cfgDefaultPlatform").value.trim(),
+            defaultGoal: document.querySelector("#cfgDefaultGoal").value.trim(),
+            scanRoot: document.querySelector("#cfgScanRoot").value.trim(),
+            githubUsername: document.querySelector("#cfgGithubUsername").value.trim(),
+            githubToken: document.querySelector("#cfgGithubToken").value.trim(),
+          }),
+        });
+        configModal.close();
+      }
+
+      // --- Scan de projetos ---
+      function openScan() {
+        document.querySelector("#scanPath").value = config.scanRoot || "";
+        document.querySelector("#scanResults").innerHTML = "";
+        scanFound = [];
+        scanModal.showModal();
+      }
+      async function runScan() {
+        const path = document.querySelector("#scanPath").value.trim();
+        const box = document.querySelector("#scanResults");
+        box.innerHTML = `<p class="text-slate-400 text-sm">Buscando...</p>`;
+        try {
+          const res = await api("/api/scan?path=" + encodeURIComponent(path));
+          scanFound = res.found;
+          if (!scanFound.length) { box.innerHTML = empty("Nenhum projeto React encontrado em " + escape(path)); return; }
+          box.innerHTML = scanFound.map((p, i) => `<label class="flex items-start gap-3 bg-slate-800 rounded-lg p-3 ${p.alreadyRegistered ? "opacity-50" : ""}">
+            <input type="checkbox" data-scan-idx="${i}" ${p.alreadyRegistered ? "disabled" : "checked"} class="mt-1">
+            <div><p class="font-medium">${escape(p.name)} ${p.alreadyRegistered ? '<span class="text-xs text-slate-400">(já cadastrado)</span>' : ""}</p>
+            <p class="text-xs text-slate-400">${escape(p.platform)} · React ${escape(p.reactVersion)} · ${escape(p.stack)}</p>
+            <p class="text-xs text-slate-500">${escape(p.path)}</p></div></label>`).join("");
+        } catch (e) { box.innerHTML = `<p class="text-rose-300 text-sm">${escape(e.message)}</p>`; }
+      }
+      async function importScanned() {
+        const checked = [...document.querySelectorAll("[data-scan-idx]:checked")].map((el) => scanFound[el.dataset.scanIdx]);
+        for (const p of checked) {
+          await api("/api/projects", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: p.name, path: p.path, platform: p.platform, reactVersion: p.reactVersion, stack: p.stack, status: "Em desenvolvimento", notes: "Importado via scan automático" }),
+          });
+        }
+        scanModal.close(); load();
+      }
+
+      // --- GitHub ---
+      async function openGithub() {
+        document.querySelector("#githubResults").innerHTML = `<p class="text-slate-400 text-sm">Buscando repositórios...</p>`;
+        githubModal.showModal();
+        const box = document.querySelector("#githubResults");
+        try {
+          githubFound = await api("/api/github/repos");
+          if (!githubFound.length) { box.innerHTML = empty("Nenhum repositório encontrado."); return; }
+          box.innerHTML = githubFound.map((r, i) => `<label class="flex items-start gap-3 bg-slate-800 rounded-lg p-3 ${r.alreadyRegistered ? "opacity-50" : ""}">
+            <input type="checkbox" data-gh-idx="${i}" ${r.alreadyRegistered ? "disabled" : "checked"} class="mt-1">
+            <div><p class="font-medium">${escape(r.fullName)} ${r.private ? '<span class="text-xs text-amber-400">privado</span>' : ""} ${r.alreadyRegistered ? '<span class="text-xs text-slate-400">(já cadastrado)</span>' : ""}</p>
+            <p class="text-xs text-slate-400">${escape(r.description)}</p>
+            <p class="text-xs text-slate-500">${escape(r.language)} · ⭐ ${r.stars}</p></div></label>`).join("");
+        } catch (e) { box.innerHTML = `<p class="text-rose-300 text-sm">${escape(e.message)}</p>`; }
+      }
+      async function importGithub() {
+        const checked = [...document.querySelectorAll("[data-gh-idx]:checked")].map((el) => githubFound[el.dataset.ghIdx]);
+        for (const r of checked) {
+          await api("/api/projects", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: r.name, repoUrl: r.fullName, platform: "React", stack: r.language, notes: r.description, status: "Em desenvolvimento" }),
+          });
+        }
+        githubModal.close(); load();
+      }
+      function uncheckAllGithub() {
+        document.querySelectorAll("[data-gh-idx]").forEach((el) => {
+          el.checked = false;
+        });
+      }
+      async function loadGithubInfo(projectId, repo) {
+        const el = document.querySelector("#ghinfo-" + projectId);
+        el.textContent = "Buscando...";
+        try {
+          const info = await api("/api/github/repo-info?repo=" + encodeURIComponent(repo));
+          el.textContent = `⭐ ${info.stars} · branch ${info.defaultBranch} · último commit: ${info.lastCommitMessage || "—"}`;
+        } catch (e) { el.textContent = e.message; }
+      }
+
+      // --- Detecção automática de componentes ---
+      async function openComponentScan(projectId, projectName) {
+        componentScanProject = { id: projectId, name: projectName };
+        document.querySelector("#componentScanTitle").textContent = "Detectar componentes — " + projectName;
+        const box = document.querySelector("#componentScanResults");
+        box.innerHTML = `<p class="text-slate-400 text-sm">Buscando...</p>`;
+        componentScanModal.showModal();
+        try {
+          const res = await api("/api/scan-components?projectId=" + encodeURIComponent(projectId));
+          componentScanFound = res.found;
+          if (!componentScanFound.length) { box.innerHTML = empty("Nenhum componente encontrado. Procuro arquivos .tsx/.jsx em PascalCase com export, dentro de " + escape(res.projectPath || "")); return; }
+          box.innerHTML = componentScanFound.map((c, i) => `<label class="flex items-start gap-3 bg-slate-800 rounded-lg p-3 ${c.alreadyRegistered ? "opacity-50" : ""}">
+            <input type="checkbox" data-comp-idx="${i}" ${c.alreadyRegistered ? "disabled" : "checked"} class="mt-1">
+            <div><p class="font-medium">${escape(c.name)} <span class="text-xs text-slate-400">${escape(c.category)}</span> ${c.alreadyRegistered ? '<span class="text-xs text-slate-400">(já cadastrado)</span>' : ""}</p>
+            <p class="text-xs text-slate-500">${escape(c.path)}</p></div></label>`).join("");
+        } catch (e) { box.innerHTML = `<p class="text-rose-300 text-sm">${escape(e.message)}</p>`; }
+      }
+      async function importComponentScan() {
+        const checked = [...document.querySelectorAll("[data-comp-idx]:checked")].map((el) => componentScanFound[el.dataset.compIdx]);
+        for (const c of checked) {
+          await api("/api/components", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: c.name, project: componentScanProject.name, category: c.category, path: c.path, description: "Detectado automaticamente" }),
+          });
+        }
+        componentScanModal.close(); load();
+      }
+
+      // --- Um único listener delegado: nenhum onclick inline, nada quebra por causa de aspas no nome ---
+      const actions = {
+        "new-project": () => openForm("projects"),
+        "new-component": () => openForm("components"),
+        "new-review": () => openForm("reviews"),
+        "open-scan": openScan,
+        "open-github": openGithub,
+        "open-config": () => configModal.showModal(),
+        "save-config": saveConfig,
+        "save-form": saveForm,
+        "run-scan": runScan,
+        "import-scan": importScanned,
+        "import-github": importGithub,
+        "uncheck-github": uncheckAllGithub,
+        "import-components": importComponentScan,
+        "close": (el) => document.getElementById(el.dataset.target).close(),
+        "edit-project": (el) => openForm("projects", el.dataset.id),
+        "edit-item": (el) => openForm(el.dataset.type, el.dataset.id),
+        "checklist": (el) => checklist(el.dataset.id),
+        "scan-components": (el) => openComponentScan(el.dataset.id, el.dataset.name),
+        "github-info": (el) => loadGithubInfo(el.dataset.id, el.dataset.repo),
+        "delete": (el) => remove(el.dataset.type, el.dataset.id),
+      };
+      document.addEventListener("click", (ev) => {
+        const el = ev.target.closest("[data-action]");
+        if (!el) return;
+        const fn = actions[el.dataset.action];
+        if (!fn) return diag("Ação desconhecida: " + el.dataset.action);
+        ev.preventDefault();
+        Promise.resolve(fn(el)).catch((e) => diag("Erro em " + el.dataset.action + ": " + e.message));
+      });
+      document.addEventListener("click", (ev) => {
+        const t = ev.target.closest("[data-tab]");
+        if (!t) return;
+        tab = t.dataset.tab; render();
+      });
+
+      checkVersion();
+      load().catch((e) => { document.querySelector("#content").innerHTML = empty("Servidor indisponível: " + escape(e.message)); });
+      loadConfig().catch(() => {});
+    </script>
+  </body>
+</html>
