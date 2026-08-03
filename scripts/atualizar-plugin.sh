@@ -46,13 +46,12 @@ if existe agy; then
       aviso "plugin CLI removido: $cli_path/$PLUGIN"
     fi
   fi
-  agy plugin install \
-    "https://github.com/victoralecrim11/plugin-react-dev-toolkit-antigravity.git" \
-    || falhas+=('agy plugin install')
+  agy plugin update "$PLUGIN" \
+    || falhas+=('agy plugin update')
   ok 'feito. Reinicie o Antigravity para carregar os arquivos novos.'
 else
   aviso "CLI 'agy' nao encontrada no PATH -- pulando."
-  aviso "Atualize manualmente: copie a pasta do plugin para $plugins_dir/$PLUGIN"
+  aviso "Para atualizar manualmente: copie a pasta do plugin para $plugins_dir/$PLUGIN"
 fi
 
 echo

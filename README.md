@@ -12,7 +12,7 @@ Copie a pasta do plugin para um dos locais que o Antigravity varre:
   - macOS/Linux: `~/.gemini/config/plugins/plugin-react-dev-toolkit/`
 - **So no projeto atual:** `.agents/plugins/plugin-react-dev-toolkit/` na raiz do workspace aberto.
 
-Ou use o comando de instalacao:
+Para instalacao inicial, use:
 
 ```shell
 agy plugin install https://github.com/victoralecrim11/plugin-react-dev-toolkit-antigravity.git
@@ -115,7 +115,17 @@ scripts/atualizar-plugin.ps1 / .sh   # atualiza sua maquina
 
 O workflow valida antes de taguear. Para pular o bump num commit so de documentacao, o workflow ja ignora mudancas em `**/*.md`, `manual.html`, `LICENSE`, `.github/**` e `scripts/**`. Para forcar um `minor` ou `major`, use **Actions → Bump da versao do plugin → Run workflow** e escolha a parte.
 
-### Na sua maquina
+### Atualizar o plugin
+
+```shell
+# Atualizar este plugin
+agy plugin update plugin-react-dev-toolkit
+
+# Atualizar todos os plugins
+agy plugin update --all
+```
+
+Ou use os scripts auxiliares na maquina:
 
 ```shell
 # Windows

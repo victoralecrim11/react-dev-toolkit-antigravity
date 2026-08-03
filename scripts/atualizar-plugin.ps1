@@ -46,12 +46,12 @@ if (Existe 'agy') {
             }
         }
     }
-    agy plugin install "https://github.com/victoralecrim11/plugin-react-dev-toolkit-antigravity.git"
-    if ($LASTEXITCODE -ne 0) { $falhas += 'agy plugin install' }
+    agy plugin update $Plugin
+    if ($LASTEXITCODE -ne 0) { $falhas += 'agy plugin update' }
     Ok 'feito. Reinicie o Antigravity para carregar os arquivos novos.'
 } else {
     Aviso "CLI 'agy' nao encontrada no PATH -- pulando."
-    Aviso "Atualize manualmente: copie a pasta do plugin para $pluginsDir\$Plugin"
+    Aviso "Para atualizar manualmente: copie a pasta do plugin para $pluginsDir\$Plugin"
 }
 
 Write-Host ''
