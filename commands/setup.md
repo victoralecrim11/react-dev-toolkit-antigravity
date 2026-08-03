@@ -38,14 +38,14 @@ Explique que TypeScript estrito é obrigatório e não é configurável.
 
 Apenas no **modo instalação**. Vem antes da gravação do perfil: sem os arquivos copiados não existe `dashboard-config.json` nem servidor para receber o `POST`.
 
-1. Copie `./skills/react-dev/references/project-hub/dashboard-server.py`, `dashboard-template.html` e o inicializador do sistema operacional para a pasta-base escolhida.
+1. Copie `./skills/react-dev/references/project-hub/dashboard-server.py`, `dashboard-template.html` e o inicializador do sistema operacional para uma subpasta `ProjectHub/` dentro da pasta-base escolhida (ex.: `C:/Users/voce/Projetos/ProjectHub/`). Crie a pasta se nao existir.
 
    > `./` e a raiz do plugin instalado. No Claude Code, quando o plugin e instalado por um marketplace, os arquivos ficam em um cache (`~/.claude/plugins/cache/...`); use sempre caminhos relativos ao diretorio do plugin, nunca ao projeto do usuario.
-2. Escreva `dashboard-config.json` na pasta-base, ao lado de `dashboard-server.py`, com os campos do perfil (ver Etapa 3).
+2. Escreva `dashboard-config.json` dentro de `ProjectHub/`, ao lado de `dashboard-server.py`, com os campos do perfil (ver Etapa 3).
 
    > **Nunca sobrescreva um `dashboard-config.json` que já existe.** O arquivo também guarda `githubUsername` e `githubToken`, que não pertencem ao perfil e seriam perdidos. Se o arquivo existir, você está em modo reconfiguração: volte à Etapa 0 e use `POST /api/config`, que faz merge parcial.
 
-3. Suba o Project Hub: `iniciar-dashboard.bat` no Windows, `./iniciar-dashboard.command` no macOS/Linux. O painel abre em `http://127.0.0.1:8766`.
+3. Suba o Project Hub: `iniciar-dashboard.bat` no Windows (dentro de `ProjectHub/`), `./iniciar-dashboard.command` no macOS/Linux. O painel abre em `http://127.0.0.1:8766`.
 
 ## Etapa 3 — Persistência do perfil
 

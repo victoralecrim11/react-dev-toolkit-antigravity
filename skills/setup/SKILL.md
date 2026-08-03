@@ -6,4 +6,4 @@ user-invocable: false
 
 # Setup
 
-Configura ambiente e perfil. Copie arquivos de `./skills/react-dev/references/project-hub/` para a pasta-base. Suba o servidor. Use `POST /api/config` para merge parcial.
+Configura ambiente e perfil. Copie arquivos de `./skills/react-dev/references/project-hub/` para `<pasta-base>/ProjectHub/`. Suba o servidor a partir de la. Use `POST /api/config` para merge parcial.

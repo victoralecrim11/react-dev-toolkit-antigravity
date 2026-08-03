@@ -6,6 +6,6 @@ user-invocable: false
 
 # Dashboard
 
-Leia `projectsRoot` em `dashboard-config.json`. Execute `iniciar-dashboard.bat` (Windows) ou `./iniciar-dashboard.command` (macOS/Linux). Abre em `http://127.0.0.1:8766`.
+Leia `projectsRoot` em `dashboard-config.json`. Execute `ProjectHub/iniciar-dashboard.bat` (Windows) ou `./ProjectHub/iniciar-dashboard.command` (macOS/Linux). Abre em `http://127.0.0.1:8766`.
 
 Se nao existir, sugira `/setup`. Siga `./skills/react-dev/references/dashboard-projetos.md`.

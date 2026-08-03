@@ -39,5 +39,5 @@ caminhos do projeto do usuario.
 
 O servidor local e o template ficam em `references/project-hub/`:
 `dashboard-server.py`, `dashboard-template.html`, `iniciar-dashboard.bat` e
-`iniciar-dashboard.command`. Copie-os para a pasta-base do usuário; o servidor
-usa só a biblioteca padrão do Python, sem `pip`.
+`iniciar-dashboard.command`. Copie-os para `<projectsRoot>/ProjectHub/`; o servidor
+usa so a biblioteca padrao do Python, sem `pip`.
