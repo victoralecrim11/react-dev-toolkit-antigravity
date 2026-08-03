@@ -22,6 +22,26 @@ agy plugin install https://github.com/victoralecrim11/plugin-react-dev-toolkit-a
 
 As skills carregam sozinhas — nao precisa copiar nada manualmente.
 
+### Desinstalar
+
+```shell
+agy plugin uninstall plugin-react-dev-toolkit
+```
+
+Se o cache nao limpar direito, remova manualmente:
+
+```shell
+# Windows
+rmdir /s /q "%USERPROFILE%\.gemini\config\plugins\plugin-react-dev-toolkit"
+rmdir /s /q "%USERPROFILE%\.gemini\antigravity-cli\plugins\plugin-react-dev-toolkit"
+
+# macOS / Linux
+rm -rf ~/.gemini/config/plugins/plugin-react-dev-toolkit
+rm -rf ~/.gemini/antigravity-cli/plugins/plugin-react-dev-toolkit
+```
+
+Depois reinstale com `agy plugin install`.
+
 ### MCP
 
 O `mcp_config.json` do plugin ja declara os servidores MCP:
