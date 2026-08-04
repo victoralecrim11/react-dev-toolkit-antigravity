@@ -66,12 +66,14 @@ O Antigravity nao usa slash-commands (`/`). As skills sao acionadas por linguage
 
 ## Estrutura do plugin
 
+Abaixo está a estrutura atual do repositório — este bloco reflete diretamente as pastas e arquivos presentes. A imagem na documentação é apenas um exemplo e pode não corresponder exatamente ao conteúdo atual.
+
 ```text
 plugin-react-dev-toolkit-antigravity/
-├── plugin.json                 # Marcador do plugin (Antigravity)
-├── mcp_config.json             # MCP servers (Vercel + Higgsfield)
-├── skills/                     # Skills do Antigravity (linguagem natural)
-│   ├── react-dev/              # Base de conhecimento (references/)
+├── plugin.json
+├── mcp_config.json
+├── skills/
+│   ├── react-dev/
 │   │   ├── SKILL.md
 │   │   └── references/
 │   │       ├── react-core.md
@@ -89,14 +91,15 @@ plugin-react-dev-toolkit-antigravity/
 │   ├── deploy/
 │   ├── gerar-midia/
 │   └── dashboard/
-├── commands/                   # Instrucoes completas (referencia)
+├── commands/
 ├── scripts/
-│   ├── bump-version.py         # Sincroniza a versao no plugin.json, README e manual
-│   ├── validate-plugin.py      # Checagens de estrutura (roda no CI)
-│   ├── atualizar-plugin.ps1    # Atualiza o Antigravity (Windows)
-│   └── atualizar-plugin.sh     # Atualiza o Antigravity (macOS/Linux)
-├── .github/workflows/
-│   └── bump-version.yml        # Bump, validacao e tag no push da main
+│   ├── bump-version.py
+│   ├── validate-plugin.py
+│   ├── atualizar-plugin.ps1
+│   └── atualizar-plugin.sh
+├── .github/
+│   └── workflows/
+│       └── bump-version.yml
 ├── manual.html
 ├── LICENSE
 └── README.md
