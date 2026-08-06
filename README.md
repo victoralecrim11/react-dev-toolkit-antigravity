@@ -1,4 +1,4 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.1.0
+# React Dev Hub Plugin — Antigravity Edition — v1.1.1
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
 Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/`.
