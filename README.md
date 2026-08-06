@@ -7,7 +7,7 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
 
 ## Indice
 
-- [React Dev Hub Plugin — Antigravity Edition — v1.1.0](#react-dev-hub-plugin--antigravity-edition--v110)
+- [React Dev Hub Plugin — Antigravity Edition — v1.1.1](#react-dev-hub-plugin--antigravity-edition--v111)
   - [Indice](#indice)
   - [Instalacao](#instalacao)
     - [Desinstalar](#desinstalar)
@@ -25,6 +25,7 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
   - [Project Hub local](#project-hub-local)
     - [Onde ficam os dados](#onde-ficam-os-dados)
   - [Relacao com o repo original](#relacao-com-o-repo-original)
+  - [O que mudou na v1.1.1](#o-que-mudou-na-v111)
   - [Licenca](#licenca)
 
 ## Instalacao
@@ -92,8 +93,6 @@ O Antigravity nao usa slash-commands (`/`). As skills sao acionadas por linguage
 | "gerar imagem do projeto" | `gerar-midia` | Hero, OG image ou video curto via Higgsfield MCP |
 | "abrir dashboard" | `dashboard` | Reabre o Project Hub local |
 
-A skill `react-dev` nao e um ponto de entrada: e a base de conhecimento que as outras carregam sob demanda.
-
 ## Estrutura do plugin
 
 Estrutura atual do repositorio — este bloco reflete os arquivos e pastas realmente presentes.
@@ -106,22 +105,6 @@ plugin-react-dev-toolkit-antigravity/
 │   ├── seguranca.md
 │   └── typescript-estrito.md
 ├── skills/                          # pontos de entrada (linguagem natural)
-│   ├── react-dev/                   # base de conhecimento (nao e entry point)
-│   │   ├── SKILL.md
-│   │   └── references/
-│   │       ├── react-core.md
-│   │       ├── nextjs.md
-│   │       ├── react-native.md
-│   │       ├── project-builder.md
-│   │       ├── security-review.md
-│   │       ├── gsd-analyzer.md
-│   │       ├── deploy-advisor.md
-│   │       ├── dashboard-projetos.md
-│   │       └── project-hub/
-│   │           ├── dashboard-server.py
-│   │           ├── dashboard-template.html
-│   │           ├── iniciar-dashboard.bat
-│   │           └── iniciar-dashboard.command
 │   ├── setup/SKILL.md
 │   ├── criar-projeto/SKILL.md
 │   ├── criar-componente/SKILL.md
@@ -161,11 +144,9 @@ plugin-react-dev-toolkit-antigravity/
 
 **`rules/`** — carregada em toda sessao pelo Antigravity, sem precisar de gatilho. Define o piso de comportamento (ver secao abaixo).
 
-**`skills/`** — o que o Antigravity usa como ponto de entrada. Cada `SKILL.md` tem `name` e `description` no frontmatter; a `description` e o que faz o agente escolher a skill a partir do que voce escreve. As skills de entrada sao curtas de proposito: elas delegam o metodo detalhado para os arquivos de `skills/react-dev/references/`, que sao carregados sob demanda. Isso mantem o contexto enxuto.
+**`skills/`** — o que o Antigravity usa como ponto de entrada. Cada `SKILL.md` tem `name` e `description` no frontmatter; a `description` e o que faz o agente escolher a skill a partir do que voce escreve. As skills de entrada sao curtas de proposito e delegam o metodo detalhado para os arquivos de referencia do plugin, carregados sob demanda. Isso mantem o contexto enxuto.
 
 **`commands/`** — nao e lido pelo Antigravity (que nao tem slash-commands). Existe para manter paridade textual com o repo original, servindo de referencia ao portar mudancas entre as duas versoes. O `validate-plugin.py` valida o frontmatter desses arquivos, mas eles nao afetam o comportamento do plugin no Antigravity.
-
-**`skills/react-dev/references/project-hub/`** — os arquivos do painel local, copiados para a maquina do usuario pela skill `setup`.
 
 ## Guardrails sempre ativos (`rules/`)
 
@@ -210,7 +191,7 @@ scripts/validate-plugin.py           # checagens de estrutura, roda no CI
 scripts/atualizar-plugin.ps1 / .sh   # atualiza sua maquina
 ```
 
-Os 3 lugares sincronizados sao `plugin.json`, `README.md` (cabecalho) e `manual.html`.
+Os 3 arquivos sincronizados sao `plugin.json`, `README.md` (cabecalho e changelog) e `manual.html`.
 
 O workflow valida antes de taguear. Para pular o bump num commit so de documentacao, o workflow ja ignora mudancas em `**/*.md`, `manual.html`, `LICENSE`, `.github/**` e `scripts/**`. Para forcar um `minor` ou `major`, use **Actions → Bump da versao do plugin → Run workflow** e escolha a parte.
 
@@ -262,7 +243,7 @@ O nivel fica em `devLevel`, definido pela skill `setup`, e funciona como **teto*
 
 O painel local (`http://127.0.0.1:8766`) acompanha projetos, componentes, reviews e checklist arquitetural. Implementado com Python padrao (sem `pip`, sem banco de dados).
 
-**Para iniciar:** acione a skill `setup` ("configurar o ambiente"). Ela copia os arquivos de `skills/react-dev/references/project-hub/` para `<projectsRoot>/ProjectHub/`, sobe o servidor e abre o painel.
+**Para iniciar:** acione a skill `setup` ("configurar o ambiente"). Ela copia os arquivos do Project Hub para `<projectsRoot>/ProjectHub/`, sobe o servidor e abre o painel.
 
 ### Onde ficam os dados
 
@@ -290,6 +271,11 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 | Caminho global | plugin cache antigo | `~/.gemini/config/plugins/` |
 
 > O `manual.html` deste repo ainda e a copia herdada do repo original e mostra os comandos no formato slash legado. Como o Antigravity usa linguagem natural, use a tabela da secao [Como usar](#como-usar-linguagem-natural) como referencia canonica de acionamento.
+
+## O que mudou na v1.1.1
+
+- Atualização da documentação do README para remover a seção dedicada à skill react-dev e alinhar a estrutura do plugin com a adaptação Antigravity.
+- Ajuste do script de atualização para sincronizar a versão do README e inserir automaticamente a seção de changelog a cada bump.
 
 ## Licenca
 

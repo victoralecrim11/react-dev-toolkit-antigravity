@@ -3,7 +3,7 @@
 
 Arquivos atualizados:
   - plugin.json (campo "version")
-  - README.md (cabecalho vX.Y.Z)
+  - README.md (cabecalho vX.Y.Z e seção de changelog)
   - manual.html (texto vX.Y.Z)
 
 Uso:
@@ -37,6 +37,8 @@ MANUAL_RE = re.compile(r'(v)(\d+\.\d+\.\d+)')
 
 README = "README.md"
 README_RE = re.compile(r'^(# React Dev Hub Plugin .+?— v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
+README_INDEX_RE = re.compile(r'^(\s*-\s*\[React Dev Hub Plugin — Antigravity Edition — v)(\d+\.\d+\.\d+)(\]\(#react-dev-hub-plugin--antigravity-edition--v\d+\.\d+\.\d+\)\s*)$', re.MULTILINE)
+README_CHANGELOG_RE = re.compile(r'^## O que mudou na v\d+\.\d+\.\d+\s*\n(?:.*\n)*?(?=^## |\Z)', re.MULTILINE)
 
 TOTAIS = sum(TARGETS.values()) + 2  # plugin.json + manual + readme
 
@@ -56,6 +58,30 @@ def bump(v, part):
     if part == "minor":
         return f"{major}.{minor + 1}.0"
     return f"{major}.{minor}.{patch + 1}"
+
+
+def update_readme(readme_text, new_version):
+    readme_text = README_RE.sub(lambda m: m.group(1) + new_version, readme_text)
+    readme_text = README_INDEX_RE.sub(lambda m: m.group(1) + new_version + m.group(3), readme_text)
+
+    section_title = f"## O que mudou na v{new_version}"
+    section_body = (
+        f"{section_title}\n\n"
+        f"- Atualização da documentação para a versão v{new_version}.\n"
+        "- Ajustes de sincronização do README e do script de atualização.\n"
+    )
+
+    existing_section = README_CHANGELOG_RE.search(readme_text)
+    if existing_section and existing_section.group(0).startswith(section_title):
+        readme_text = readme_text[:existing_section.start()] + section_body + readme_text[existing_section.end():]
+    else:
+        marker = "\n## Licenca"
+        if marker in readme_text:
+            readme_text = readme_text.replace(marker, f"\n{section_body.strip()}\n\n## Licenca", 1)
+        else:
+            readme_text = readme_text.rstrip() + "\n\n" + section_body
+
+    return readme_text
 
 
 def main():
@@ -133,8 +159,8 @@ def main():
             written.append(f"  {README}: {found} ocorrencia(s) ok")
         else:
             nl = "\r\n" if "\r\n" in rt else "\n"
-            rr.write_text(README_RE.sub(lambda m: m.group(1) + new, rt),
-                          encoding="utf-8", newline=nl)
+            updated = update_readme(rt, new)
+            rr.write_text(updated, encoding="utf-8", newline=nl)
             written.append(f"  {README}: {found} ocorrencia(s) -> {new}")
 
     if problems:
