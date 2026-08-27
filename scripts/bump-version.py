@@ -37,7 +37,7 @@ MANUAL_RE = re.compile(r'(v)(\d+\.\d+\.\d+)')
 
 README = "README.md"
 README_RE = re.compile(r'^(# React Dev Hub Plugin .+?— v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
-README_INDEX_RE = re.compile(r'^(\s*-\s*\[React Dev Hub Plugin — Antigravity Edition — v)(\d+\.\d+\.\d+)(\]\(#react-dev-hub-plugin--antigravity-edition--v\d+\.\d+\.\d+\)\s*)$', re.MULTILINE)
+README_INDEX_RE = re.compile(r'^(\s*-\s*\[React Dev Hub Plugin — Antigravity Edition — v)(\d+\.\d+\.\d+)(\]\(#react-dev-hub-plugin--antigravity-edition--v)(\d+)(\)\s*)$', re.MULTILINE)
 README_CHANGELOG_RE = re.compile(r'^## O que mudou na v\d+\.\d+\.\d+\s*\n(?:.*\n)*?(?=^## |\Z)', re.MULTILINE)
 
 TOTAIS = sum(TARGETS.values()) + 2  # plugin.json + manual + readme
@@ -62,7 +62,10 @@ def bump(v, part):
 
 def update_readme(readme_text, new_version):
     readme_text = README_RE.sub(lambda m: m.group(1) + new_version, readme_text)
-    readme_text = README_INDEX_RE.sub(lambda m: m.group(1) + new_version + m.group(3), readme_text)
+    readme_text = README_INDEX_RE.sub(
+        lambda m: m.group(1) + new_version + m.group(3) + new_version.replace(".", "") + m.group(5),
+        readme_text,
+    )
 
     section_title = f"## O que mudou na v{new_version}"
     section_body = (

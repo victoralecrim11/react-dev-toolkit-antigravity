@@ -2,9 +2,9 @@
 
 Use quando o usuário disser dashboard, projetos, componentes reutilizáveis, reviews, métricas, dívida técnica ou checklist arquitetural. O painel é local, sem banco externo, e usa dois arquivos: `projetos-data.json` para os registros e `dashboard-config.json` para o perfil e as preferências do desenvolvedor.
 
-## Inicializacao
+## Inicialização
 
-Os arquivos do Project Hub ficam organizados em uma subpasta `ProjectHub/` dentro da pasta-base (`projectsRoot`). Copie `references/dashboard-server.py`, `dashboard-template.html` e o inicializador adequado para `ProjectHub/` (crie a pasta se nao existir). Os dados (`projetos-data.json` e `dashboard-config.json`) tambem ficam dentro de `ProjectHub/`. Execute o inicializador de la; o servidor Python padrao abre `http://127.0.0.1:8766`. Nao requer pip.
+Copie `references/project-hub/dashboard-server.py`, `dashboard-template.html` e o inicializador adequado para a pasta desejada. Execute o inicializador; o servidor Python padrão abre `http://127.0.0.1:8766`. Não requer pip.
 
 ## Perfil do desenvolvedor — fonte única da verdade
 
@@ -81,3 +81,4 @@ Use **exatamente** estas chaves. O painel lê os campos por nome; descrever o ca
 - Ao **criar** um projeto, `status`, `platform` e `level` vazios são herdados do perfil (`defaultGoal`, `defaultPlatform`, `devLevel`) e o aviso `Herdado do perfil: ...` aparece em `warnings`. Isso é rede de segurança: continue enviando os campos, porque só você sabe a plataforma real deste projeto. Em **atualização** não há herança — campo vazio permanece vazio.
 
 Leitura por `GET /api/data` e `GET /api/config`. O dashboard também permite editar e excluir visualmente. Nunca envie os dados para serviços externos.
+

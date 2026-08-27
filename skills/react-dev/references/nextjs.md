@@ -7,3 +7,4 @@ Use junto de `./skills/react-dev/references/react-core.md` em Next.js. Prefira A
 - Modele loading, error e not-found por rota. Documente cache/revalidação antes de otimizar.
 
 Explique a divisão servidor/cliente e os trade-offs de SSR, SSG e renderização dinâmica em cada decisão.
+

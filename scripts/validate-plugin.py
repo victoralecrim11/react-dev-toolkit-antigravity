@@ -2,7 +2,7 @@
 """Valida a estrutura do plugin Antigravity antes de publicar.
 
 Checa: plugin.json, mcp_config.json, skills/*/SKILL.md, commands/*.md,
-frontmatter YAML,ausencia de '-extension' e residuos.
+frontmatter YAML, referencias internas, ausencia de '-extension' e residuos.
 
 Uso:
     python scripts/validate-plugin.py
@@ -138,6 +138,29 @@ if bytecode:
     E(f"bytecode versionado: {bytecode}")
 else:
     O("sem __pycache__/*.pyc")
+
+missing_refs = []
+ref_pattern = re.compile(r"`((?:\./)?skills/react-dev/references/[^`\s]+|references/[^`\s]+)`")
+for f in glob.glob("commands/*.md") + glob.glob("skills/**/*.md", recursive=True):
+    if f.endswith("SKILL.md"):
+        base = Path(f).parent
+    elif Path(f).as_posix().startswith("skills/react-dev/references/"):
+        base = Path("skills/react-dev")
+    else:
+        base = Path(".")
+    text = Path(f).read_text(encoding="utf-8")
+    for m in ref_pattern.finditer(text):
+        ref = m.group(1)
+        if ref.startswith("references/"):
+            target = base / ref
+        else:
+            target = Path(ref[2:] if ref.startswith("./") else ref)
+        if not target.exists():
+            missing_refs.append(f"{f}: {ref}")
+if missing_refs:
+    E(f"referencias internas inexistentes: {missing_refs}")
+else:
+    O("referencias internas citadas existem")
 
 # ---------- saida ----------
 for o in oks:

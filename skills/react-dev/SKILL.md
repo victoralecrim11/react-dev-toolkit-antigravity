@@ -11,6 +11,7 @@ independente: leia só o que a tarefa exige, não todos.
 
 | Assunto | Arquivo |
 | :-- | :-- |
+| Mentoria, tutor, carreira, arquitetura e code review didático | `references/react-mentor.md` |
 | React, TypeScript, Hooks, estado, dados remotos | `references/react-core.md` |
 | Next.js: App Router, Server Components, Server Actions, SSR/SSG | `references/nextjs.md` |
 | React Native e Expo: Expo Router, Hermes, Reanimated, mobile | `references/react-native.md` |
@@ -30,6 +31,10 @@ caminhos do projeto do usuario.
 
 - **`react-core.md` é a base.** Para Next.js ou Expo, leia `react-core.md`
   primeiro e depois a referência da plataforma.
+- **Mentoria e construção são papéis diferentes.** Para ensinar, revisar,
+  orientar carreira ou explicar arquitetura, leia `react-mentor.md`. Para
+  transformar ideia em projeto, planejar ou implementar, leia
+  `project-builder.md`.
 - **TypeScript estrito é obrigatório** e não é configurável.
 - **O nível do desenvolvedor é o teto de complexidade.** Ele vive em `devLevel`
   no `dashboard-config.json` e é definido pela skill `setup`. Nenhuma skill pergunta

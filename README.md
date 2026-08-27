@@ -1,4 +1,4 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.1.1
+# React Dev Hub Plugin — Antigravity Edition — v1.2.1
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
 Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/`.
@@ -7,7 +7,7 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
 
 ## Indice
 
-- [React Dev Hub Plugin — Antigravity Edition — v1.1.1](#react-dev-hub-plugin--antigravity-edition--v111)
+- [React Dev Hub Plugin — Antigravity Edition — v1.2.1](#react-dev-hub-plugin--antigravity-edition--v121)
   - [Indice](#indice)
   - [Instalacao](#instalacao)
     - [Desinstalar](#desinstalar)
@@ -25,6 +25,7 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
   - [Project Hub local](#project-hub-local)
     - [Onde ficam os dados](#onde-ficam-os-dados)
   - [Relacao com o repo original](#relacao-com-o-repo-original)
+  - [O que mudou na v1.2.1](#o-que-mudou-na-v121)
   - [O que mudou na v1.1.1](#o-que-mudou-na-v111)
   - [Licenca](#licenca)
 
@@ -265,12 +266,18 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 | Acionamento | `commands/` (slash-commands prefixados) | `skills/` (linguagem natural) |
 | Skills | 1 skill `react-dev` com `references/` | 11 skills (1 base + 10 entry points) |
 | Guardrails sempre ativos | nao tem equivalente | `rules/` (2 arquivos) |
-| Referencias | 8 arquivos em `references/` | os mesmos 8 arquivos |
+| Referencias | 9 arquivos em `references/` | os mesmos arquivos-base, incluindo `security-review.md` |
 | Caminho das referencias | plugin root legacy | `./skills/...` (relativo ao plugin) |
 | Bump | manifestos adicionais + docs | `plugin.json` + README + manual |
 | Caminho global | plugin cache antigo | `~/.gemini/config/plugins/` |
 
 > O `manual.html` deste repo ainda e a copia herdada do repo original e mostra os comandos no formato slash legado. Como o Antigravity usa linguagem natural, use a tabela da secao [Como usar](#como-usar-linguagem-natural) como referencia canonica de acionamento.
+
+## O que mudou na v1.2.1
+
+- Portadas para Antigravity as referências completas da versão original: `react-core`, `project-builder`, `react-mentor`, `gsd-analyzer` e demais arquivos-base.
+- Adicionada a referência `security-review.md`, que já era citada pelas skills de review e auditoria de segurança.
+- Reforçado o validador para falhar quando comandos ou skills citarem referências internas inexistentes.
 
 ## O que mudou na v1.1.1
 
