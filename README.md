@@ -1,4 +1,4 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.2.1
+# React Dev Hub Plugin — Antigravity Edition — v1.2.2
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
 Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/`.
@@ -7,7 +7,7 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
 
 ## Indice
 
-- [React Dev Hub Plugin — Antigravity Edition — v1.2.1](#react-dev-hub-plugin--antigravity-edition--v121)
+- [React Dev Hub Plugin — Antigravity Edition — v1.2.2](#react-dev-hub-plugin--antigravity-edition--v122)
   - [Indice](#indice)
   - [Instalacao](#instalacao)
     - [Desinstalar](#desinstalar)
@@ -283,6 +283,11 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 
 - Atualização da documentação do README para remover a seção dedicada à skill react-dev e alinhar a estrutura do plugin com a adaptação Antigravity.
 - Ajuste do script de atualização para sincronizar a versão do README e inserir automaticamente a seção de changelog a cada bump.
+
+## O que mudou na v1.2.2
+
+- Atualização da documentação para a versão v1.2.2.
+- Ajustes de sincronização do README e do script de atualização.
 
 ## Licenca
 
