@@ -1,4 +1,4 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.2.4
+# React Dev Hub Plugin — Antigravity Edition — v1.2.5
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
 Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/`.
@@ -7,7 +7,7 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
 
 ## Indice
 
-- [React Dev Hub Plugin — Antigravity Edition — v1.2.3](#react-dev-hub-plugin--antigravity-edition--v123)
+- [React Dev Hub Plugin — Antigravity Edition — v1.2.5](#react-dev-hub-plugin--antigravity-edition--v125)
   - [Indice](#indice)
   - [Instalacao](#instalacao)
     - [Desinstalar](#desinstalar)
@@ -25,9 +25,9 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
   - [Project Hub local](#project-hub-local)
     - [Onde ficam os dados](#onde-ficam-os-dados)
   - [Relacao com o repo original](#relacao-com-o-repo-original)
-  - [O que mudou na v1.2.1](#o-que-mudou-na-v121)
-  - [O que mudou na v1.1.1](#o-que-mudou-na-v111)
-  - [O que mudou na v1.2.4](#o-que-mudou-na-v124)
+  - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
+  - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
+  - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
 - [Licenca](#licenca)
 
 ## Instalacao
@@ -273,6 +273,12 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 | Caminho global | plugin cache antigo | `~/.gemini/config/plugins/` |
 
 > O `manual.html` deste repo ainda e a copia herdada do repo original e mostra os comandos no formato slash legado. Como o Antigravity usa linguagem natural, use a tabela da secao [Como usar](#como-usar-linguagem-natural) como referencia canonica de acionamento.
+
+<a id="o-que-mudou-na-v125"></a>
+## O que mudou na v1.2.5
+
+- **Commit:** feat(ci): aprimora automacao de changelog com ancoras e indice aninhado
+- **Automação de changelog.** `scripts/bump-version.py` agora cria esta seção automaticamente no `README.md` durante o bump de versão.
 
 <a id="o-que-mudou-na-v124"></a>
 ## O que mudou na v1.2.4
