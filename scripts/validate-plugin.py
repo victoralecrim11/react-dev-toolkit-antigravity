@@ -2,7 +2,8 @@
 """Valida a estrutura do plugin Antigravity antes de publicar.
 
 Checa: plugin.json, mcp_config.json, skills/*/SKILL.md, commands/*.md,
-frontmatter YAML, referencias internas, ausencia de '-extension' e residuos.
+frontmatter YAML, referencias internas, ausencia de segredos hardcoded,
+ausencia de '-extension' e residuos.
 
 Uso:
     python scripts/validate-plugin.py
@@ -99,7 +100,7 @@ for f in skill_files:
     if not data.get("description"):
         E(f"{f}: frontmatter sem description")
 
-# ---------- commands (referencia, nao usados pelo Antigravity) ----------
+# ---------- commands ----------
 cmd_files = sorted(glob.glob("commands/*.md"))
 for f in cmd_files:
     data, err = frontmatter(f)
@@ -109,14 +110,54 @@ for f in cmd_files:
     if not data.get("description"):
         E(f"{f}: frontmatter sem description")
 
+# ---------- seguranca: deteccao de segredos ----------
+SECRET_PATTERNS = {
+    "GitHub Token": re.compile(r"gh[pous]_[A-Za-z0-9_]{36,255}"),
+    "OpenAI / Provider Key": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
+    "Vercel Token": re.compile(r"\bvercel_[A-Za-z0-9_]{24,}\b"),
+    "Chave Privada": re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
+    "Chave/Token em Hardcode": re.compile(
+        r"""(?i)(?:api[_-]?key|secret[_-]?key|access[_-]?token)\s*[:=]\s*['\"][a-zA-Z0-9_\-]{20,}['\"]"""
+    ),
+}
+
+found_secrets = []
+scan_files = (
+    glob.glob("commands/*.md")
+    + glob.glob("skills/**/*.md", recursive=True)
+    + glob.glob("rules/*.md")
+    + glob.glob("scripts/*.py")
+    + glob.glob("scripts/*.sh")
+    + glob.glob("scripts/*.ps1")
+)
+
+for f in scan_files:
+    content = Path(f).read_text(encoding="utf-8", errors="ignore")
+    for line_num, line in enumerate(content.splitlines(), start=1):
+        if any(token in line.lower() for token in ("placeholder", "exemplo", "example", "<chave")):
+            continue
+        for name, pattern in SECRET_PATTERNS.items():
+            if pattern.search(line):
+                found_secrets.append(f"{f}:{line_num} ({name})")
+
+if found_secrets:
+    for item in found_secrets:
+        E(f"possivel segredo hardcoded detectado: {item}")
+else:
+    O("nenhum segredo ou chave de API hardcoded detectado")
+
 # ---------- higiene ----------
-leaked = [os.path.basename(os.path.dirname(f)) for f in skill_files
-          if "extension" in os.path.basename(os.path.dirname(f))]
+leaked = [
+    os.path.basename(os.path.dirname(f))
+    for f in skill_files
+    if "extension" in os.path.basename(os.path.dirname(f))
+]
 if leaked:
     E(f"skills com 'extension' no nome: {leaked}")
 
 ext_hits = [
-    f for f in glob.glob("commands/*.md") + glob.glob("skills/**/*.md", recursive=True)
+    f
+    for f in glob.glob("commands/*.md") + glob.glob("skills/**/*.md", recursive=True)
     if re.search(r"-extension", Path(f).read_text(encoding="utf-8"))
 ]
 if ext_hits:
@@ -126,12 +167,12 @@ else:
 
 junk = 0
 for f in glob.glob("**/*.md", recursive=True):
-    n = len(re.findall(r"\[cite:\s*\d+\]", Path(f).read_text(encoding="utf-8")))
+    n = len(re.findall(r"\", Path(f).read_text(encoding="utf-8")))
     if n:
-        E(f"{f}: {n} marcador(es) [cite: N] residuais")
+        E(f"{f}: {n} marcador(es) residuais")
         junk += n
 if not junk:
-    O("nenhum marcador [cite: N] residual")
+    O("nenhum marcador residual")
 
 bytecode = glob.glob("**/__pycache__", recursive=True) + glob.glob("**/*.pyc", recursive=True)
 if bytecode:
@@ -140,12 +181,16 @@ else:
     O("sem __pycache__/*.pyc")
 
 missing_refs = []
-ref_pattern = re.compile(r"`((?:\./)?skills/react-dev/references/[^`\s]+|references/[^`\s]+)`")
+ref_pattern = re.compile(
+    r"`((?:\./)?skills/(?:react-dev|ui-ux)/(?:references|data)/[^`\s]+|references/[^`\s]+)`"
+)
 for f in glob.glob("commands/*.md") + glob.glob("skills/**/*.md", recursive=True):
     if f.endswith("SKILL.md"):
         base = Path(f).parent
     elif Path(f).as_posix().startswith("skills/react-dev/references/"):
         base = Path("skills/react-dev")
+    elif Path(f).as_posix().startswith("skills/ui-ux/references/"):
+        base = Path("skills/ui-ux")
     else:
         base = Path(".")
     text = Path(f).read_text(encoding="utf-8")
@@ -157,6 +202,7 @@ for f in glob.glob("commands/*.md") + glob.glob("skills/**/*.md", recursive=True
             target = Path(ref[2:] if ref.startswith("./") else ref)
         if not target.exists():
             missing_refs.append(f"{f}: {ref}")
+
 if missing_refs:
     E(f"referencias internas inexistentes: {missing_refs}")
 else:

@@ -6,10 +6,13 @@ user-invocable: false
 
 # Analisar projeto GSD
 
-Siga o metodo completo de `./skills/react-dev/references/gsd-analyzer.md`.
+Siga o método completo de `./skills/react-dev/references/gsd-analyzer.md`.
 
-1. Leia `devLevel` em `dashboard-config.json` (`GET /api/config`) para calibrar tom e profundidade. Nao pergunte o nivel; sem perfil, aplique o fallback de `./skills/react-dev/references/dashboard-projetos.md`.
-2. Detecte a pasta `.planning/` na raiz do projeto. Se nao existir, avise em uma linha, ofereca a skill `review` no lugar e pare.
-3. Cruze a intencao documentada (`PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, `STATE.md`, `phases/XX-YY-PLAN.md` versus `XX-YY-SUMMARY.md`) com o codigo real, usando `./skills/react-dev/references/react-core.md` e a referencia da plataforma como criterio tecnico.
-4. Classifique cada achado como `[spec]` ou `[qualidade]`, por prioridade. Apresente o relatorio antes de qualquer edicao e pergunte o que corrigir. Nao edite os artefatos `.planning/` por conta propria.
-5. Registre via `POST /api/projects` (se ainda nao existir) e `POST /api/reviews`, com o estado do ciclo GSD no `summary`. Schema em `./skills/react-dev/references/dashboard-projetos.md`.
+1. Leia `devLevel` em `dashboard-config.json` (`GET /api/config`) para calibrar tom e profundidade. Não pergunte o nível; sem perfil, aplique o fallback de `./skills/react-dev/references/dashboard-projetos.md`.
+2. Detecte a pasta `.planning/` na raiz do projeto. Se não existir, avise em uma linha, ofereça a skill `review` no lugar e pare.
+3. Cruze a intenção documentada (`PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, `STATE.md`, `phases/XX-YY-PLAN.md` versus `XX-YY-SUMMARY.md`) com o código real, usando:
+   * `./skills/react-dev/references/react-core.md` e a referência da plataforma como critério técnico.
+   * `./skills/ui-ux/references/accessibility.md` e `./skills/ui-ux/references/responsive-design.md` como critério de interface e usabilidade.
+   * `./skills/ui-ux/data/colors.csv` e `styles.csv` para checar aderência a tokens do Design System.
+4. Classifique cada achado como `[spec]`, `[qualidade]` ou `[ui-ux]`, por prioridade. Apresente o relatório antes de qualquer edição e pergunte o que corrigir. Não edite os artefatos `.planning/` por conta própria.
+5. Registre via `POST /api/projects` (se ainda não existir) e `POST /api/reviews`, com o estado do ciclo GSD no `summary`. Schema em `./skills/react-dev/references/dashboard-projetos.md`.
