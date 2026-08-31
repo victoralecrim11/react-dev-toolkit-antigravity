@@ -12,35 +12,38 @@ Uso:
     python scripts/bump-version.py --major
     python scripts/bump-version.py --set 2.0.0
     python scripts/bump-version.py --check    # so imprime, nao escreve
-
-Edita apenas a string da versao, preservando a formatacao dos JSONs
-(nao reserializa: isso evitaria diffs de formatacao desnecessarios).
 """
 import argparse
+import io
 import json
 import re
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Arquivo JSON com campo "version"
+# arquivo -> quantas ocorrencias de "version" devem existir no Antigravity
 TARGETS = {
     "plugin.json": 1,
 }
 
 VERSION_RE = re.compile(r'("version"\s*:\s*")(\d+\.\d+\.\d+)(")')
 
-# No manual.html e README.md a versao e texto, nao campo JSON.
+# No manual.html a versao e texto
 MANUAL = "manual.html"
 MANUAL_RE = re.compile(r'(v)(\d+\.\d+\.\d+)')
 
+# No README.md, as Regex foram flexibilizadas para suportar o titulo Antigravity
 README = "README.md"
-# Flexivel para aceitar tanto " - v" quanto " — v" no cabecalho
-README_RE = re.compile(r'^(# .*?v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
+README_RE = re.compile(r'^(# .*? v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
+README_TOP_LINK_RE = re.compile(r'^(\s*- \[.*? v)(\d+\.\d+\.\d+)(\]\(#.*?-v)(\d+)(\))\s*$', re.MULTILINE)
+# Captura a identacao exata para o Indice (TOC)
+README_LINK_ITEM_RE = re.compile(r'^(\s*)- \[O que mudou na v\d+\.\d+\.\d+\]\(#o-que-mudou-na-v\d+\)\s*$', re.MULTILINE)
+# Tolera a presenca ou ausencia da ancora <a id>
+README_SECTION_HEADING_RE = re.compile(r'^(?:<a id="o-que-mudou-na-v\d+"></a>\n)?## O que mudou na v\d+\.\d+\.\d+\s*$', re.MULTILINE)
 
-TOTAIS = sum(TARGETS.values()) + 2  # plugin.json + manual + readme
+TOTAIS = sum(TARGETS.values()) + 2
 
 
 def read_current():
@@ -51,6 +54,18 @@ def read_current():
     return v
 
 
+def git_last_commit_subject():
+    try:
+        return subprocess.check_output(
+            ["git", "log", "-1", "--pretty=%s"],
+            cwd=ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return ""
+
+
 def bump(v, part):
     major, minor, patch = (int(x) for x in v.split("."))
     if part == "major":
@@ -58,65 +73,6 @@ def bump(v, part):
     if part == "minor":
         return f"{major}.{minor + 1}.0"
     return f"{major}.{minor}.{patch + 1}"
-
-
-def get_last_commit():
-    """Captura a ultima mensagem de commit via git log."""
-    try:
-        return subprocess.check_output("git log -1 --pretty=%B", shell=True).decode('utf-8').strip().split('\n')[0]
-    except Exception:
-        return "Atualizacao de versao"
-
-
-def update_readme(readme_text, new_version, last_commit):
-    # 1. Atualizar o titulo principal com a nova versao
-    readme_text = README_RE.sub(lambda m: m.group(1) + new_version, readme_text)
-
-    anchor_id = f"o-que-mudou-na-v{new_version.replace('.', '')}"
-    toc_entry = f"- [O que mudou na v{new_version}](#{anchor_id})"
-
-    # 2. Atualizar o Indice (TOC) para aninhar a versao anterior
-    if re.search(r"^- \[O que mudou na v", readme_text, flags=re.MULTILINE):
-        readme_text = re.sub(
-            r"(^- \[O que mudou na v\d+\.\d+\.\d+\].*)",
-            f"{toc_entry}\n  \\1",
-            readme_text,
-            count=1,
-            flags=re.MULTILINE
-        )
-    # Se ainda nao existe changelog no Indice, coloca acima de Licenca
-    elif "- [Licenca]" in readme_text:
-        readme_text = readme_text.replace("- [Licenca]", f"{toc_entry}\n- [Licenca]", 1)
-    elif "- [Licença]" in readme_text:
-        readme_text = readme_text.replace("- [Licença]", f"{toc_entry}\n- [Licença]", 1)
-
-    # 3. Atualizar o Corpo do Changelog
-    body_entry = (
-        f"<a id=\"{anchor_id}\"></a>\n"
-        f"## O que mudou na v{new_version}\n\n"
-        f"- **Commit:** {last_commit}\n"
-        f"- **Automacao de changelog.** `scripts/bump-version.py` inseriu esta secao automaticamente no `README.md` durante o bump de versao.\n\n"
-    )
-
-    # Empurra versoes anteriores para baixo caso ja exista historico
-    if re.search(r"^## O que mudou na v", readme_text, flags=re.MULTILINE):
-        readme_text = re.sub(
-            r"((?:<a id=\"o-que-mudou-na-v\d+\"></a>\n)?^## O que mudou na v\d+\.\d+\.\d+)",
-            f"{body_entry}\\1",
-            readme_text,
-            count=1,
-            flags=re.MULTILINE
-        )
-    # Se e o primeiro changelog automatizado, poe embaixo do marcador principal
-    elif "## 📝 Changelog" in readme_text:
-        readme_text = readme_text.replace(
-            "## 📝 Changelog\n",
-            f"## 📝 Changelog\n\n{body_entry}"
-        )
-    elif "## Licenca" in readme_text:
-        readme_text = readme_text.replace("## Licenca", f"{body_entry}## Licenca", 1)
-
-    return readme_text
 
 
 def main():
@@ -143,8 +99,6 @@ def main():
         print(f"proxima={new}")
 
     problems, written = [], []
-    
-    # Valida plugin.json
     for rel, expected in TARGETS.items():
         path = ROOT / rel
         if not path.exists():
@@ -168,7 +122,6 @@ def main():
             path.write_text(new_text, encoding="utf-8", newline="\n")
         written.append(f"  {rel}: {current} -> {new}")
 
-    # Valida manual.html
     mp = ROOT / MANUAL
     if not mp.exists():
         problems.append(f"{MANUAL}: nao encontrado")
@@ -185,7 +138,6 @@ def main():
                           encoding="utf-8", newline=nl)
             written.append(f"  {MANUAL}: {found} ocorrencia(s) -> {new}")
 
-    # Valida README.md e aplica o Changelog inteligente
     rr = ROOT / README
     if not rr.exists():
         problems.append(f"{README}: nao encontrado")
@@ -198,9 +150,56 @@ def main():
             written.append(f"  {README}: {found} ocorrencia(s) ok")
         else:
             nl = "\r\n" if "\r\n" in rt else "\n"
-            last_commit = get_last_commit()
-            updated = update_readme(rt, new, last_commit)
-            rr.write_text(updated, encoding="utf-8", newline=nl)
+            
+            # Atualiza titulo principal
+            newrt = README_RE.sub(lambda m: m.group(1) + new, rt)
+            
+            # Atualiza o link principal do indice
+            newrt = README_TOP_LINK_RE.sub(
+                lambda m: m.group(1) + new + m.group(3) + new.replace(".", "") + m.group(5),
+                newrt,
+            )
+            
+            # Atualiza os links aninhados do changelog no Indice
+            if f"[O que mudou na v{new}]" not in newrt:
+                first_link = README_LINK_ITEM_RE.search(newrt)
+                if first_link:
+                    indent = first_link.group(1) # Pega a identacao exata da linha
+                    newrt = (newrt[:first_link.start()] +
+                             f"{indent}- [O que mudou na v{new}](#o-que-mudou-na-v{new.replace('.', '')})\n" +
+                             newrt[first_link.start():])
+                else:
+                    # Fallback caso nao haja links anteriores (coloca abaixo do link principal)
+                    top_link = README_TOP_LINK_RE.search(newrt)
+                    if top_link:
+                        newrt = (newrt[:top_link.end()] + 
+                                 f"\n    - [O que mudou na v{new}](#o-que-mudou-na-v{new.replace('.', '')})" + 
+                                 newrt[top_link.end():])
+
+            # Atualiza o corpo do Changelog
+            if f"## O que mudou na v{new}" not in newrt:
+                commit_subject = git_last_commit_subject()
+                summary_line = (f"- **Commit:** {commit_subject}"
+                                if commit_subject else
+                                f"- **Bump:** versão atualizada para v{new}.")
+                section_content = (
+                    f"<a id=\"o-que-mudou-na-v{new.replace('.', '')}\"></a>\n"
+                    f"## O que mudou na v{new}\n\n"
+                    f"{summary_line}\n"
+                    f"- **Automação de changelog.** `scripts/bump-version.py` agora cria esta seção automaticamente no `README.md` durante o bump de versão.\n\n"
+                )
+                
+                first_section = README_SECTION_HEADING_RE.search(newrt)
+                if first_section:
+                    newrt = newrt[:first_section.start()] + section_content + newrt[first_section.start():]
+                else:
+                    license_anchor = re.search(r'^## Licen[cç]a', newrt, re.MULTILINE)
+                    if license_anchor:
+                        newrt = newrt[:license_anchor.start()] + section_content + newrt[license_anchor.start():]
+                    else:
+                        newrt += f"\n{section_content}"
+                        
+            rr.write_text(newrt, encoding="utf-8", newline=nl)
             written.append(f"  {README}: {found} ocorrencia(s) -> {new}")
 
     if problems:
