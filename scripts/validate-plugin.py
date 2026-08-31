@@ -166,11 +166,15 @@ else:
     O("nenhuma referencia a '-extension' nos arquivos do plugin")
 
 junk = 0
+# Concatenando a string para o filtro do chat não cortar o código
+cite_pattern = re.compile(r"\[c" + r"ite:\s*\d+\]")
+
 for f in glob.glob("**/*.md", recursive=True):
-    n = len(re.findall(r"\", Path(f).read_text(encoding="utf-8")))
-    if n:
-        E(f"{f}: {n} marcador(es) residuais")
-        junk += n
+    content = Path(f).read_text(encoding="utf-8")
+    matches = cite_pattern.findall(content)
+    if matches:
+        E(f"{f}: {len(matches)} marcador(es) residuais")
+        junk += len(matches)
 if not junk:
     O("nenhum marcador residual")
 
