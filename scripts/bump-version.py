@@ -3,7 +3,7 @@
 
 Arquivos atualizados:
   - plugin.json (campo "version")
-  - README.md (cabecalho vX.Y.Z e seção de changelog)
+  - README.md (cabecalho vX.Y.Z, Indice aninhado e secao de changelog)
   - manual.html (texto vX.Y.Z)
 
 Uso:
@@ -20,6 +20,7 @@ import argparse
 import json
 import re
 import sys
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -36,9 +37,8 @@ MANUAL = "manual.html"
 MANUAL_RE = re.compile(r'(v)(\d+\.\d+\.\d+)')
 
 README = "README.md"
-README_RE = re.compile(r'^(# React Dev Hub Plugin .+?— v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
-README_INDEX_RE = re.compile(r'^(\s*-\s*\[React Dev Hub Plugin — Antigravity Edition — v)(\d+\.\d+\.\d+)(\]\(#react-dev-hub-plugin--antigravity-edition--v)(\d+)(\)\s*)$', re.MULTILINE)
-README_CHANGELOG_RE = re.compile(r'^## O que mudou na v\d+\.\d+\.\d+\s*\n(?:.*\n)*?(?=^## |\Z)', re.MULTILINE)
+# Flexivel para aceitar tanto " - v" quanto " — v" no cabecalho
+README_RE = re.compile(r'^(# .*?v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
 
 TOTAIS = sum(TARGETS.values()) + 2  # plugin.json + manual + readme
 
@@ -60,29 +60,61 @@ def bump(v, part):
     return f"{major}.{minor}.{patch + 1}"
 
 
-def update_readme(readme_text, new_version):
+def get_last_commit():
+    """Captura a ultima mensagem de commit via git log."""
+    try:
+        return subprocess.check_output("git log -1 --pretty=%B", shell=True).decode('utf-8').strip().split('\n')[0]
+    except Exception:
+        return "Atualizacao de versao"
+
+
+def update_readme(readme_text, new_version, last_commit):
+    # 1. Atualizar o titulo principal com a nova versao
     readme_text = README_RE.sub(lambda m: m.group(1) + new_version, readme_text)
-    readme_text = README_INDEX_RE.sub(
-        lambda m: m.group(1) + new_version + m.group(3) + new_version.replace(".", "") + m.group(5),
-        readme_text,
+
+    anchor_id = f"o-que-mudou-na-v{new_version.replace('.', '')}"
+    toc_entry = f"- [O que mudou na v{new_version}](#{anchor_id})"
+
+    # 2. Atualizar o Indice (TOC) para aninhar a versao anterior
+    if re.search(r"^- \[O que mudou na v", readme_text, flags=re.MULTILINE):
+        readme_text = re.sub(
+            r"(^- \[O que mudou na v\d+\.\d+\.\d+\].*)",
+            f"{toc_entry}\n  \\1",
+            readme_text,
+            count=1,
+            flags=re.MULTILINE
+        )
+    # Se ainda nao existe changelog no Indice, coloca acima de Licenca
+    elif "- [Licenca]" in readme_text:
+        readme_text = readme_text.replace("- [Licenca]", f"{toc_entry}\n- [Licenca]", 1)
+    elif "- [Licença]" in readme_text:
+        readme_text = readme_text.replace("- [Licença]", f"{toc_entry}\n- [Licença]", 1)
+
+    # 3. Atualizar o Corpo do Changelog
+    body_entry = (
+        f"<a id=\"{anchor_id}\"></a>\n"
+        f"## O que mudou na v{new_version}\n\n"
+        f"- **Commit:** {last_commit}\n"
+        f"- **Automacao de changelog.** `scripts/bump-version.py` inseriu esta secao automaticamente no `README.md` durante o bump de versao.\n\n"
     )
 
-    section_title = f"## O que mudou na v{new_version}"
-    section_body = (
-        f"{section_title}\n\n"
-        f"- Atualização da documentação para a versão v{new_version}.\n"
-        "- Ajustes de sincronização do README e do script de atualização.\n"
-    )
-
-    existing_section = README_CHANGELOG_RE.search(readme_text)
-    if existing_section and existing_section.group(0).startswith(section_title):
-        readme_text = readme_text[:existing_section.start()] + section_body + readme_text[existing_section.end():]
-    else:
-        marker = "\n## Licenca"
-        if marker in readme_text:
-            readme_text = readme_text.replace(marker, f"\n{section_body.strip()}\n\n## Licenca", 1)
-        else:
-            readme_text = readme_text.rstrip() + "\n\n" + section_body
+    # Empurra versoes anteriores para baixo caso ja exista historico
+    if re.search(r"^## O que mudou na v", readme_text, flags=re.MULTILINE):
+        readme_text = re.sub(
+            r"((?:<a id=\"o-que-mudou-na-v\d+\"></a>\n)?^## O que mudou na v\d+\.\d+\.\d+)",
+            f"{body_entry}\\1",
+            readme_text,
+            count=1,
+            flags=re.MULTILINE
+        )
+    # Se e o primeiro changelog automatizado, poe embaixo do marcador principal
+    elif "## 📝 Changelog" in readme_text:
+        readme_text = readme_text.replace(
+            "## 📝 Changelog\n",
+            f"## 📝 Changelog\n\n{body_entry}"
+        )
+    elif "## Licenca" in readme_text:
+        readme_text = readme_text.replace("## Licenca", f"{body_entry}## Licenca", 1)
 
     return readme_text
 
@@ -111,6 +143,8 @@ def main():
         print(f"proxima={new}")
 
     problems, written = [], []
+    
+    # Valida plugin.json
     for rel, expected in TARGETS.items():
         path = ROOT / rel
         if not path.exists():
@@ -134,6 +168,7 @@ def main():
             path.write_text(new_text, encoding="utf-8", newline="\n")
         written.append(f"  {rel}: {current} -> {new}")
 
+    # Valida manual.html
     mp = ROOT / MANUAL
     if not mp.exists():
         problems.append(f"{MANUAL}: nao encontrado")
@@ -150,6 +185,7 @@ def main():
                           encoding="utf-8", newline=nl)
             written.append(f"  {MANUAL}: {found} ocorrencia(s) -> {new}")
 
+    # Valida README.md e aplica o Changelog inteligente
     rr = ROOT / README
     if not rr.exists():
         problems.append(f"{README}: nao encontrado")
@@ -162,7 +198,8 @@ def main():
             written.append(f"  {README}: {found} ocorrencia(s) ok")
         else:
             nl = "\r\n" if "\r\n" in rt else "\n"
-            updated = update_readme(rt, new)
+            last_commit = get_last_commit()
+            updated = update_readme(rt, new, last_commit)
             rr.write_text(updated, encoding="utf-8", newline=nl)
             written.append(f"  {README}: {found} ocorrencia(s) -> {new}")
 
