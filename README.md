@@ -104,44 +104,46 @@ Estrutura atual do repositorio — este bloco reflete os arquivos e pastas realm
 
 ```text
 plugin-react-dev-toolkit-antigravity/
-├── plugin.json                      # manifesto do Antigravity (name, version, description)
-├── mcp_config.json                  # servidores MCP: vercel + higgsfield
-├── rules/                           # guardrails SEMPRE ativos
-│   ├── seguranca.md
-│   └── typescript-estrito.md
-├── skills/                          # pontos de entrada (linguagem natural)
-│   ├── setup/SKILL.md
-│   ├── criar-projeto/SKILL.md
-│   ├── criar-componente/SKILL.md
-│   ├── arquitetura/SKILL.md
-│   ├── review/SKILL.md
-│   ├── auditar-seguranca/SKILL.md
-│   ├── analisar-projeto-gsd/SKILL.md
-│   ├── deploy/SKILL.md
-│   ├── gerar-midia/SKILL.md
-│   └── dashboard/SKILL.md
-├── commands/                        # paridade com a versao original; o Antigravity NAO usa
-│   ├── setup.md
-│   ├── criar-projeto.md
-│   ├── criar-componente.md
-│   ├── arquitetura.md
-│   ├── review.md
-│   ├── auditar-seguranca.md
-│   ├── analisar-projeto-gsd.md
-│   ├── deploy.md
-│   ├── gerar-midia.md
-│   └── dashboard.md
-├── scripts/
-│   ├── bump-version.py              # sincroniza a versao em 3 lugares
-│   ├── validate-plugin.py           # checagens de estrutura, roda no CI
-│   ├── atualizar-plugin.ps1
-│   └── atualizar-plugin.sh
 ├── .github/
 │   └── workflows/
 │       └── bump-version.yml
-├── manual.html
+├── commands/                        # paridade com a versao original; o Antigravity NAO usa
+│   ├── analisar-projeto-gsd.md
+│   ├── arquitetura.md
+│   ├── auditar-seguranca.md
+│   ├── criar-componente.md
+│   ├── criar-projeto.md
+│   ├── dashboard.md
+│   ├── deploy.md
+│   ├── gerar-midia.md
+│   ├── review.md
+│   └── setup.md
+├── rules/                           # guardrails SEMPRE ativos
+│   ├── seguranca.md
+│   └── typescript-estrito.md
+├── scripts/
+│   ├── atualizar-plugin.ps1
+│   ├── atualizar-plugin.sh
+│   ├── bump-version.py              # sincroniza a versao em 3 lugares
+│   └── validate-plugin.py           # checagens de estrutura, roda no CI
+├── skills/                          # pontos de entrada (linguagem natural)
+│   ├── analisar-projeto-gsd/SKILL.md
+│   ├── arquitetura/SKILL.md
+│   ├── auditar-seguranca/SKILL.md
+│   ├── criar-componente/SKILL.md
+│   ├── criar-projeto/SKILL.md
+│   ├── dashboard/SKILL.md
+│   ├── deploy/SKILL.md
+│   ├── gerar-midia/SKILL.md
+│   ├── react-dev/SKILL.md
+│   ├── review/SKILL.md
+│   ├── setup/SKILL.md
+│   └── ui-ux/SKILL.md
 ├── .gitignore
 ├── LICENSE
+├── manual.html
+├── mcp_config.json                  # servidores MCP: vercel + higgsfield
+├── plugin.json                      # manifesto do Antigravity (name, version, description)
 └── README.md
 ```
 
