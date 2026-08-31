@@ -25,10 +25,13 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
   - [Project Hub local](#project-hub-local)
     - [Onde ficam os dados](#onde-ficam-os-dados)
   - [Relacao com o repo original](#relacao-com-o-repo-original)
-  - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
-  - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
-  - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
-- [Licenca](#licenca)
+- [O que mudou na v1.2.5](#o-que-mudou-na-v125)
+  - [O que mudou na v1.2.4](#o-que-mudou-na-v124)
+  - [O que mudou na v1.2.1](#o-que-mudou-na-v121)
+  - [O que mudou na v1.1.1](#o-que-mudou-na-v111)
+  - [O que mudou na v1.2.2](#o-que-mudou-na-v122)
+  - [O que mudou na v1.2.3](#o-que-mudou-na-v123)
+  - [Licenca](#licenca)
 
 ## Instalacao
 
@@ -286,22 +289,26 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 - **Commit:** feat(ci): automatiza injeção de changelog e índice no README durante bump
 - **Automacao de changelog.** `scripts/bump-version.py` inseriu esta secao automaticamente no `README.md` durante o bump de versao.
 
+<a id="o-que-mudou-na-v121"></a>
 ## O que mudou na v1.2.1
 
 - Portadas para Antigravity as referências completas da versão original: `react-core`, `project-builder`, `react-mentor`, `gsd-analyzer` e demais arquivos-base.
 - Adicionada a referência `security-review.md`, que já era citada pelas skills de review e auditoria de segurança.
 - Reforçado o validador para falhar quando comandos ou skills citarem referências internas inexistentes.
 
+<a id="o-que-mudou-na-v111"></a>
 ## O que mudou na v1.1.1
 
 - Atualização da documentação do README para remover a seção dedicada à skill react-dev e alinhar a estrutura do plugin com a adaptação Antigravity.
 - Ajuste do script de atualização para sincronizar a versão do README e inserir automaticamente a seção de changelog a cada bump.
 
+<a id="o-que-mudou-na-v122"></a>
 ## O que mudou na v1.2.2
 
 - Atualização da documentação para a versão v1.2.2.
 - Ajustes de sincronização do README e do script de atualização.
 
+<a id="o-que-mudou-na-v123"></a>
 ## O que mudou na v1.2.3
 
 - Atualização da documentação para a versão v1.2.3.
