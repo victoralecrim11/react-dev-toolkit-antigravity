@@ -9,8 +9,8 @@ Cria prompts especializados e orquestra a geração de mídia e assets visuais i
 
 ## Fluxo de Execução
 
-### 1. Extração de Contexto do Design System (`skills/ui-ux/`)
-Antes de formular o prompt de geração, consulte a identidade visual do projeto:
+### 1. Extração de Contexto do Design System
+Antes de formular o prompt de geração, consulte a identidade visual do projeto. Se existir `.design/design-system.md` na raiz do projeto, **use-o como fonte primária** de paleta, estética e tipografia. Caso contrário, consulte diretamente:
 * **Paleta Semântica:** Extrair códigos hexadecimais e contrastes de `skills/ui-ux/data/colors.csv`.
 * **Estética & Atmosfera:** Mapear linguagem visual de `skills/ui-ux/data/styles.csv` (ex: minimalista, iluminação suave, glassmorphism, tecnologia limpa).
 * **Composição:** Definir proporção e hierarquia visual de acordo com o asset de destino.

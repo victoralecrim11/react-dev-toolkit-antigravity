@@ -11,11 +11,11 @@ Cria componentes React, Next.js ou React Native com TypeScript estrito, arquitet
 
 ## Fluxo de Execução
 
-### 1. Consulta ao Design System & UX (`skills/ui-ux/`)
-Antes de escrever o código, consulte as diretrizes de interface:
-* **Estilo & Tokens:** Consultar `skills/ui-ux/data/styles.csv` e `colors.csv` para paleta, bordas, sombras e espaçamentos.
-* **Tipografia:** Alinhar hierarquia visual com `skills/ui-ux/data/typography.csv`.
-* **Acessibilidade & Usabilidade:** Seguir regras de `skills/ui-ux/references/accessibility.md` (labels, roles, estados e contraste mínimo WCAG AA) e `skills/ui-ux/data/ux-guidelines.csv`.
+### 1. Consulta ao Design System & UX
+Antes de escrever o código, verifique se existe `.design/design-system.md` na raiz do projeto do usuário. Se existir, **use-o como fonte primária** de tokens (paleta, tipografia, estilo, anti-padrões e acessibilidade). Se não existir, faça fallback para consulta direta via `python skills/ui-ux/scripts/search-uiux.py "<consulta>" --domain <dominio>`:
+* **Estilo & Tokens:** `--domain style` e `--domain color` para paleta, bordas, sombras e espaçamentos.
+* **Tipografia:** `--domain typography` para alinhar a hierarquia visual.
+* **Acessibilidade & Usabilidade:** `--domain ux` para regras de usabilidade, mais `skills/ui-ux/references/accessibility.md` (labels, roles, estados e contraste mínimo WCAG AA).
 
 ### 2. Definição Técnica & Props
 * Determinar se o componente pertence a **React Web / Next.js** ou **React Native**.

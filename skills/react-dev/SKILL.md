@@ -18,6 +18,7 @@ independente: leia só o que a tarefa exige, não todos.
 | Discovery, definição de MVP, implementação incremental, review | `references/project-builder.md` |
 | Segurança: auditoria de brechas, segredos, XSS, injeção, auth | `references/security-review.md` |
 | Deploy, CI/CD, provedores, build de produção, segredos | `references/deploy-advisor.md` |
+| Design System, paleta, tipografia, estilo visual, UX e acessibilidade | `../ui-ux/SKILL.md` (skill separada — gera `.design/design-system.md` no projeto via Handoff Técnico) |
 | GSD: analisar projeto feito com o framework (`.planning/`, spec vs código) | `references/gsd-analyzer.md` |
 | Project Hub: schema da API, perfil do dev, registros | `references/dashboard-projetos.md` |
 
