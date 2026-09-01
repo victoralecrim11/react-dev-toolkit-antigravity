@@ -8,7 +8,8 @@ name: Bump da versao do plugin
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths-ignore:
       - "**/*.md"
       - "manual.html"
