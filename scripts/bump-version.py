@@ -34,9 +34,10 @@ VERSION_RE = re.compile(r'("version"\s*:\s*")(\d+\.\d+\.\d+)(")')
 MANUAL = "manual.html"
 MANUAL_RE = re.compile(r'(v)(\d+\.\d+\.\d+)')
 
-# No README.md, as Regex foram flexibilizadas para suportar o titulo Antigravity
+# No README.md, atualiza APENAS o cabecalho h1 principal do plugin
+# O historico de changelog (## O que mudou na vX.Y.Z) NAO e alterado
 README = "README.md"
-README_RE = re.compile(r'^(# .*? v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
+README_RE = re.compile(r'^(# .*?Antigravity Edition.*? v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
 README_TOP_LINK_RE = re.compile(r'^(\s*- \[.*? v)(\d+\.\d+\.\d+)(\]\(#.*?-v)(\d+)(\))\s*$', re.MULTILINE)
 # Captura a identacao exata para o Indice (TOC)
 README_LINK_ITEM_RE = re.compile(r'^(\s*)- \[O que mudou na v\d+\.\d+\.\d+\]\(#o-que-mudou-na-v\d+\)\s*$', re.MULTILINE)
@@ -218,6 +219,7 @@ def main():
             seen.add(m.group(2))
         for m in README_RE.finditer((ROOT / README).read_text(encoding="utf-8")):
             seen.add(m.group(2))
+        # Nao valida versoes do historico de changelog — apenas o h1 e plugin.json
         if seen != {new}:
             sys.exit(f"erro: versoes divergentes apos o bump: {sorted(seen)}")
         print(f"\nversao sincronizada em {TOTAIS} lugares: {new}")
