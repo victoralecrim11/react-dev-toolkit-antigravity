@@ -1,5 +1,5 @@
 {
   "name": "plugin-react-dev-toolkit",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Tech Lead e mentor para projetos React, Next.js e React Native/Expo: discovery de MVP, scaffolding TypeScript, code review didatico, deploy assistido e Project Hub local."
 }
