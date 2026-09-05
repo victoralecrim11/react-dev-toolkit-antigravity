@@ -93,6 +93,7 @@ O Antigravity nao usa slash-commands (`/`). As skills sao acionadas por linguage
 | "criar projeto React" | `criar-projeto` | Discovery do MVP e scaffolding TypeScript |
 | "criar componente" | `criar-componente` | Componentes, hooks e testes tipados |
 | "definir arquitetura" | `arquitetura` | Pastas, estado e responsabilidades proporcionais ao nivel |
+| "projetar interface" | `ui-ux` | Design, paleta de cores, tipografia e acessibilidade |
 | "revisar meu codigo" | `review` | Code review didatico, com passada de seguranca embutida |
 | "auditar a seguranca do projeto" | `auditar-seguranca` | Auditoria de brechas por severidade |
 | "analisar meu projeto GSD" | `analisar-projeto-gsd` | Cruza os artefatos `.planning/` com o codigo real |

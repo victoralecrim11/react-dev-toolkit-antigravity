@@ -126,9 +126,12 @@
           <h2 class="text-xl font-bold">Importar do GitHub</h2>
           <button type="button" data-action="close" data-target="githubModal" class="text-slate-400 text-xl leading-none">×</button>
         </div>
-        <div class="flex justify-between items-center gap-2 mb-4">
+        <div class="flex flex-col gap-2 mb-4">
           <p class="text-slate-400 text-sm">Selecione os repositórios para importar.</p>
-          <button type="button" data-action="uncheck-github" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded">Desmarcar todos</button>
+          <div class="flex gap-2">
+            <input id="githubSearch" type="text" placeholder="Buscar repositório..." class="flex-1 bg-slate-800 border border-slate-700 rounded p-2 text-white text-sm" />
+            <button type="button" data-action="uncheck-github" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded text-sm whitespace-nowrap">Desmarcar todos</button>
+          </div>
         </div>
         <div id="githubResults" class="space-y-2 max-h-96 overflow-y-auto"></div>
         <div class="flex justify-end gap-2 mt-6">
@@ -239,11 +242,15 @@
         return `<div class="bg-slate-900 border border-slate-800 rounded-xl p-4"><p class="text-slate-400 text-sm">${title}</p><p class="text-2xl font-bold">${value}</p></div>`;
       }
       function render() {
+        document.querySelector("[data-tab='projects']").innerHTML = `Projetos <span class="text-xs ml-1 bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">${data.projects.length}</span>`;
+        document.querySelector("[data-tab='components']").innerHTML = `Componentes <span class="text-xs ml-1 bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">${data.components.length}</span>`;
+        document.querySelector("[data-tab='reviews']").innerHTML = `Reviews <span class="text-xs ml-1 bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">${data.reviews.length}</span>`;
+        
         document.querySelectorAll(".tab").forEach((b) => (b.className = "tab px-3 py-2 " + (b.dataset.tab === tab ? "border-b-2 border-blue-400 text-blue-300" : "text-slate-400")));
         document.querySelector("#metrics").innerHTML =
           metric("Projetos", data.projects.length) + metric("Componentes", data.components.length) +
           metric("Reviews", data.reviews.length) + metric("Dívidas", data.reviews.reduce((n, r) => n + (r.debts || []).length, 0));
-        document.querySelector("#content").innerHTML = tab === "projects" ? projects() : tab === "components" ? table("components") : table("reviews");
+        document.querySelector("#content").innerHTML = tab === "projects" ? projects() : tab === "components" ? table("components") : groupedReviews();
       }
       function escape(s = "") {
         return String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -284,6 +291,55 @@
         if (!list.length) return empty("Nenhum registro ainda.");
         const cols = fields[type].slice(0, 4);
         return `<div class="overflow-x-auto bg-slate-900 rounded-xl border border-slate-800"><table class="w-full text-left"><thead class="text-slate-400 text-sm"><tr>${cols.map((c) => `<th class="p-3">${c[1]}</th>`).join("")}<th></th></tr></thead><tbody>${list.map((x) => `<tr class="border-t border-slate-800">${cols.map((c) => `<td class="p-3">${escape(Array.isArray(x[c[0]]) ? x[c[0]].join(", ") : x[c[0]])}</td>`).join("")}<td class="p-3 whitespace-nowrap"><button type="button" data-action="edit-item" data-type="${type}" data-id="${escape(x.id)}" class="text-blue-300">Editar</button> <button type="button" data-action="delete" data-type="${type}" data-id="${escape(x.id)}" class="text-rose-300">Excluir</button></td></tr>`).join("")}</tbody></table></div>`;
+      }
+      function groupedReviews() {
+        const list = data.reviews;
+        if (!list.length) return empty("Nenhum review registrado ainda.");
+        const grouped = {};
+        list.forEach(r => {
+          const p = r.project || "Desconhecido";
+          if (!grouped[p]) grouped[p] = [];
+          grouped[p].push(r);
+        });
+        let html = '<div class="space-y-6">';
+        for (const project in grouped) {
+          const reviews = grouped[project].sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+          html += `<div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="bg-slate-800/50 p-4 border-b border-slate-700 flex justify-between items-center">
+              <h3 class="font-bold text-lg text-blue-300">${escape(project)}</h3>
+              <span class="text-xs text-slate-400">${reviews.length} review(s)</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead class="text-slate-400 text-sm">
+                  <tr>
+                    <th class="p-3">Data</th>
+                    <th class="p-3">Manutenibilidade</th>
+                    <th class="p-3">Resumo</th>
+                    <th class="p-3">Dívidas</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>`;
+          reviews.forEach((r, idx) => {
+            const isLatest = idx === 0;
+            const dateStr = r.updatedAt ? new Date(r.updatedAt).toLocaleDateString("pt-BR", {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : "—";
+            const mainClass = r.maintainability >= 80 ? 'text-emerald-400' : r.maintainability >= 60 ? 'text-amber-400' : 'text-rose-400';
+            html += `<tr class="border-t border-slate-800 ${isLatest ? 'bg-slate-800/20' : 'opacity-75'}">
+              <td class="p-3 whitespace-nowrap text-sm">${dateStr}${isLatest ? ' <span class="text-[10px] uppercase bg-blue-900 text-blue-300 px-1 rounded ml-1">Atual</span>' : ''}</td>
+              <td class="p-3"><span class="${mainClass} font-bold">${escape(r.maintainability)}</span></td>
+              <td class="p-3 text-sm">${escape(r.summary)}</td>
+              <td class="p-3 text-sm">${escape(Array.isArray(r.debts) ? r.debts.join(", ") : r.debts)}</td>
+              <td class="p-3 whitespace-nowrap text-right">
+                <button type="button" data-action="edit-item" data-type="reviews" data-id="${escape(r.id)}" class="text-blue-300 text-sm mr-2">Editar</button>
+                <button type="button" data-action="delete" data-type="reviews" data-id="${escape(r.id)}" class="text-rose-300 text-sm">Excluir</button>
+              </td>
+            </tr>`;
+          });
+          html += `</tbody></table></div></div>`;
+        }
+        html += '</div>';
+        return html;
       }
       function empty(t) { return `<div class="p-10 text-center border border-dashed border-slate-700 rounded-xl text-slate-400">${t}</div>`; }
 
@@ -503,6 +559,13 @@
         const t = ev.target.closest("[data-tab]");
         if (!t) return;
         tab = t.dataset.tab; render();
+      });
+      document.getElementById("githubSearch")?.addEventListener("input", (ev) => {
+        const term = ev.target.value.toLowerCase();
+        document.querySelectorAll("#githubResults label").forEach(label => {
+          const text = label.textContent.toLowerCase();
+          label.style.display = text.includes(term) ? "flex" : "none";
+        });
       });
 
       checkVersion();

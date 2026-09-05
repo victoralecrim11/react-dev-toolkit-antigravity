@@ -462,6 +462,19 @@ class Handler(SimpleHTTPRequestHandler):
                 for key, value in item.items():
                     if value not in ("", None, []) or key not in merged:
                         merged[key] = value
+                
+                # Sincronizacao de mudanca de nome (Feature 2)
+                if collection == "projects" and merged.get("name") != items[old].get("name"):
+                    old_name = items[old].get("name")
+                    new_name = merged.get("name")
+                    if old_name and new_name:
+                        for comp in data.get("components", []):
+                            if comp.get("project") == old_name:
+                                comp["project"] = new_name
+                        for rev in data.get("reviews", []):
+                            if rev.get("project") == old_name:
+                                rev["project"] = new_name
+                
                 item = merged
                 items[old] = item
             save_data(data)
