@@ -15,7 +15,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$Plugin = 'plugin-react-dev-toolkit',
+    [string]$Plugin = 'react-dev-toolkit-antigravity',
     [switch]$LimparCache
 )
 

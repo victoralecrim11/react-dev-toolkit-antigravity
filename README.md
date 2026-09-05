@@ -40,15 +40,15 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
 
 Copie a pasta do plugin para um dos locais que o Antigravity varre:
 
-- **Global (todos os projetos):** `~/.gemini/config/plugins/plugin-react-dev-toolkit/`
-  - Windows: `C:\Users\SEU_USUARIO\.gemini\config\plugins\plugin-react-dev-toolkit\`
-  - macOS/Linux: `~/.gemini/config/plugins/plugin-react-dev-toolkit/`
-- **So no projeto atual:** `.agents/plugins/plugin-react-dev-toolkit/` na raiz do workspace aberto (o Antigravity tambem aceita `_agents/plugins/`).
+- **Global (todos os projetos):** `~/.gemini/config/plugins/react-dev-toolkit-antigravity/`
+  - Windows: `C:\Users\SEU_USUARIO\.gemini\config\plugins\react-dev-toolkit-antigravity\`
+  - macOS/Linux: `~/.gemini/config/plugins/react-dev-toolkit-antigravity/`
+- **So no projeto atual:** `.agents/plugins/react-dev-toolkit-antigravity/` na raiz do workspace aberto (o Antigravity tambem aceita `_agents/plugins/`).
 
 Para instalacao inicial, use:
 
 ```shell
-agy plugin install https://github.com/victoralecrim11/plugin-react-dev-toolkit-antigravity.git
+agy plugin install https://github.com/victoralecrim11/react-dev-toolkit-antigravity.git
 ```
 
 > Se a pasta `~/.gemini/config/plugins/` nao existir ainda, crie ela.
@@ -58,19 +58,19 @@ As skills e as rules carregam sozinhas — nao precisa copiar nada manualmente.
 ### Desinstalar
 
 ```shell
-agy plugin uninstall plugin-react-dev-toolkit
+agy plugin uninstall react-dev-toolkit-antigravity
 ```
 
 Se o cache nao limpar direito, remova manualmente:
 
 ```shell
 # Windows
-rmdir /s /q "%USERPROFILE%\.gemini\config\plugins\plugin-react-dev-toolkit"
-rmdir /s /q "%USERPROFILE%\.gemini\antigravity-cli\plugins\plugin-react-dev-toolkit"
+rmdir /s /q "%USERPROFILE%\.gemini\config\plugins\react-dev-toolkit-antigravity"
+rmdir /s /q "%USERPROFILE%\.gemini\antigravity-cli\plugins\react-dev-toolkit-antigravity"
 
 # macOS / Linux
-rm -rf ~/.gemini/config/plugins/plugin-react-dev-toolkit
-rm -rf ~/.gemini/antigravity-cli/plugins/plugin-react-dev-toolkit
+rm -rf ~/.gemini/config/plugins/react-dev-toolkit-antigravity
+rm -rf ~/.gemini/antigravity-cli/plugins/react-dev-toolkit-antigravity
 ```
 
 Depois reinstale com `agy plugin install`.
@@ -107,7 +107,7 @@ O Antigravity nao usa slash-commands (`/`). As skills sao acionadas por linguage
 Estrutura atual do repositorio — este bloco reflete os arquivos e pastas realmente presentes.
 
 ```text
-plugin-react-dev-toolkit-antigravity/
+react-dev-toolkit-antigravity/
 ├── .github/
 │   └── workflows/
 │       └── bump-version.yml
@@ -210,7 +210,7 @@ O workflow valida antes de taguear. Para pular o bump num commit so de documenta
 
 ```shell
 # Atualizar este plugin
-agy plugin update plugin-react-dev-toolkit
+agy plugin update react-dev-toolkit-antigravity
 
 # Atualizar todos os plugins
 agy plugin update --all

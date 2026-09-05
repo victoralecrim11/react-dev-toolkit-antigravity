@@ -13,7 +13,7 @@
 
 set -uo pipefail
 
-PLUGIN="${PLUGIN:-plugin-react-dev-toolkit}"
+PLUGIN="${PLUGIN:-react-dev-toolkit-antigravity}"
 LIMPAR_CACHE=0
 falhas=()
 
