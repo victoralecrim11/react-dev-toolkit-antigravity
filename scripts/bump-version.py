@@ -38,7 +38,7 @@ MANUAL_RE = re.compile(r'(v)(\d+\.\d+\.\d+)')
 # O historico de changelog (## O que mudou na vX.Y.Z) NAO e alterado
 README = "README.md"
 README_RE = re.compile(r'^(# .*?Antigravity Edition.*? v)(\d+\.\d+\.\d+)\s*$', re.MULTILINE)
-README_TOP_LINK_RE = re.compile(r'^(\s*- \[.*? v)(\d+\.\d+\.\d+)(\]\(#.*?-v)(\d+)(\))\s*$', re.MULTILINE)
+README_TOP_LINK_RE = re.compile(r'^(- \[.*? v)(\d+\.\d+\.\d+)(\]\(#.*?-v)(\d+)(\))\s*$', re.MULTILINE)
 # Captura a identacao exata para o Indice (TOC)
 README_LINK_ITEM_RE = re.compile(r'^(\s*)- \[O que mudou na v\d+\.\d+\.\d+\]\(#o-que-mudou-na-v\d+\)\s*$', re.MULTILINE)
 # Tolera a presenca ou ausencia da ancora <a id>
