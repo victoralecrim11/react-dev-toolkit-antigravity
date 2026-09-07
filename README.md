@@ -101,8 +101,20 @@ O Antigravity nao usa slash-commands (`/`). As skills sao acionadas por linguage
 | "publicar projeto" | `deploy` | Analisa a stack, valida o build e publica |
 | "gerar imagem do projeto" | `gerar-midia` | Hero, OG image ou video curto via Higgsfield MCP |
 | "abrir dashboard" | `dashboard` | Reabre o Project Hub local |
+| "executar testes E2E" ou "avaliar qualidade" | `qa-engineer` | Analisa requisitos, investiga bugs, desenha cenários de teste e recomenda automação (Playwright/Cypress) |
 
 ## Estrutura do plugin
+
+### Uso da skill `qa-engineer`
+
+A skill `qa-engineer` ativa uma persona de Engenheiro de QA Sênior que ajuda a definir cenários de teste, investigar bugs, priorizar casos de teste e recomendar automação (ex.: Playwright ou Cypress). Exemplos de frases para acionar a skill:
+
+- "Executar testes E2E para o fluxo de checkout"
+- "Avaliar a qualidade desta tela e sugerir testes automatizados"
+- "Investigar erro 500 ao salvar e gerar um bug report"
+
+Consulte o arquivo de referência para regras e boas práticas: [skills/qa-engineer/SKILL.md](skills/qa-engineer/SKILL.md).
+
 
 Estrutura atual do repositorio — este bloco reflete os arquivos e pastas realmente presentes.
 
