@@ -151,6 +151,7 @@ react-dev-toolkit-antigravity/
 │   ├── dashboard/SKILL.md
 │   ├── deploy/SKILL.md
 │   ├── gerar-midia/SKILL.md
+│   ├── qa-engineer/SKILL.md
 │   ├── react-dev/SKILL.md
 │   ├── review/SKILL.md
 │   ├── setup/SKILL.md
