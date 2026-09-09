@@ -28,6 +28,13 @@ Só leia um CSV inteiro via `data/` diretamente quando precisar varrer o dataset
 
 ## Fluxo de Operação Obrigatório (Reasoning & Handoff)
 
+A responsabilidade da skill `ui-ux` é separar dois artefatos distintos:
+
+- `DESIGN.md` na raiz do projeto = direção criativa, objetivo visual, persona, princípios, referências e decisões conceituais.
+- `.design/design-system.md` = contrato técnico de tokens e implementação (cores, tipografia, spacing, radius, breakpoints, variáveis CSS, mapeamento Tailwind/React Native).
+
+Se `DESIGN.md` não existir, o sistema pode seguir com o fluxo atual de reasoning e fallback. Se `.design/design-system.md` não existir, a skill continua usando os fallbacks atuais do plugin (CSV + referências) sem quebrar compatibilidade.
+
 Para garantir que o time técnico (`react-dev` e `criar-projeto`) implemente a interface correta sem alucinações, siga o funil de design abaixo:
 
 1. **Descoberta do Produto & Estilo:** Identifique o nicho e a linguagem visual.
@@ -48,10 +55,11 @@ Para garantir que o time técnico (`react-dev` e `criar-projeto`) implemente a i
 
    Consulte `references/reasoning-rules.md` para as regras de cruzamento de dados (ex: adequar o contraste WCAG AA/AAA ao estilo e aplicar as diretrizes de `ux`, `accessibility.md` e `responsive-design.md`).
 
-4. **Handoff Técnico (Obrigatório):**
+4. **Handoff Técnico (Obrigatório quando houver implementação real):**
 
    Consulte `references/design-routing.md`.
 
-   Você **DEVE** consolidar todas as decisões tomadas nos passos anteriores e gravar fisicamente um artefato no projeto do usuário no caminho: `.design/design-system.md`.
+   Primeiro, registre a direção criativa em `DESIGN.md`.
+   Em seguida, quando a interface exigir implementação técnica real, grave fisicamente o contrato técnico em `.design/design-system.md`.
 
-   O seu trabalho finaliza ao salvar este documento. Transmita o contexto para o `react-dev` apenas após a criação do arquivo, para que ele saiba exatamente como estruturar o Tailwind CSS, shadcn/ui, styled-components ou StyleSheet.
+   O seu trabalho finaliza ao salvar estes documentos. Transmita o contexto para o `react-dev` apenas após a criação dos artefatos, para que ele saiba exatamente como estruturar o Tailwind CSS, shadcn/ui, styled-components ou StyleSheet sem duplicar a fonte de verdade.
