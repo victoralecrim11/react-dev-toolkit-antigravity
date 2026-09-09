@@ -22,6 +22,19 @@ os.chdir(ROOT)
 
 errs, warns, oks = [], [], []
 E, W, O = errs.append, warns.append, oks.append
+VALID_TOOLS = {
+    "read",
+    "write",
+    "filesystem",
+    "terminal",
+    "browser",
+    "web",
+    "design",
+    "test-runner",
+    "review",
+    "security",
+    "analysis",
+}
 
 
 def load(rel):
@@ -118,6 +131,8 @@ for f in skill_files:
     if not data.get("description"):
         E(f"{f}: frontmatter sem description")
 
+valid_skill_names = {Path(f).parent.name for f in skill_files}
+
 # ---------- agents ----------
 agent_files = sorted(glob.glob("agents/*/agent.md"))
 if agent_files:
@@ -125,6 +140,7 @@ if agent_files:
     seen_names = {}
     for f in agent_files:
         data, err = frontmatter(f)
+        text = Path(f).read_text(encoding="utf-8")
         if err:
             E(f"{f}: {err}")
             continue
@@ -133,8 +149,23 @@ if agent_files:
             E(f"{f}: frontmatter sem name")
         if not data.get("description"):
             E(f"{f}: frontmatter sem description")
-        if not data.get("tools"):
+        tools = data.get("tools")
+        if not tools:
             E(f"{f}: frontmatter sem tools")
+        elif not isinstance(tools, list):
+            E(f"{f}: frontmatter 'tools' deve ser lista")
+        else:
+            invalid_tools = [tool for tool in tools if tool not in VALID_TOOLS]
+            if invalid_tools:
+                E(f"{f}: tools invalidos para schema atual: {invalid_tools}")
+
+        section_match = re.search(r"## Skills e contexto\s*(.*?)\n## Regras", text, flags=re.S)
+        if section_match:
+            mentions = set(re.findall(r"`([A-Za-z0-9-]+)`", section_match.group(1)))
+            invalid_skills = sorted(mentions - valid_skill_names)
+            if invalid_skills:
+                E(f"{f}: referencias de skill invalidas: {invalid_skills}")
+
         if name:
             if name in seen_names:
                 E(f"agent duplicado: {name} em {seen_names[name]} e {f}")

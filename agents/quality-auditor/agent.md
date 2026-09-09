@@ -4,7 +4,7 @@ description: Realiza revisão independente de qualidade, QA, arquitetura, segura
 tools:
   - read
   - browser
-  - tests
+  - test-runner
   - review
   - security
 mainAgent: false

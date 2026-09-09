@@ -3,9 +3,10 @@ name: project-orchestrator
 description: Coordena workflows complexos de React, Next.js e Expo, classifica prioridade e delega especialistas sem forçar multi-agent em tarefas simples.
 tools:
   - read
-  - delegation
-  - coordination
-  - approval
+  - write
+  - filesystem
+  - terminal
+  - browser
 mainAgent: true
 subagent: false
 ---

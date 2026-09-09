@@ -24,7 +24,6 @@ Use este agente quando o objetivo exigir referência visual atualizada, benchmar
 ## Skills e contexto
 
 - `ui-ux`
-- `pesquisar-referencias-ui` (opcional)
 
 ## Regras
 
