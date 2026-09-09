@@ -1,4 +1,4 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.3.2
+# React Dev Hub Plugin — Antigravity Edition — v1.3.3
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
 Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/` + camada agentica opcional.
@@ -93,7 +93,7 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
 
 ## Indice
 
-- [React Dev Hub Plugin — Antigravity Edition — v1.3.2](#react-dev-hub-plugin--antigravity-edition--v132)
+- [React Dev Hub Plugin — Antigravity Edition — v1.3.3](#react-dev-hub-plugin--antigravity-edition--v133)
   - [Indice](#indice)
   - [Instalacao](#instalacao)
     - [Desinstalar](#desinstalar)
@@ -111,7 +111,7 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
   - [Project Hub local](#project-hub-local)
     - [Onde ficam os dados](#onde-ficam-os-dados)
   - [Relacao com o repo original](#relacao-com-o-repo-original)
-- [O que mudou na v1.3.2](#o-que-mudou-na-v132)
+- [O que mudou na v1.3.3](#o-que-mudou-na-v133)
   - [O que mudou na v1.2.7](#o-que-mudou-na-v127)
   - [O que mudou na v1.2.6](#o-que-mudou-na-v126)
   - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
@@ -394,6 +394,12 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 | Caminho global | plugin cache antigo | `~/.gemini/config/plugins/` |
 
 > O `manual.html` deste repo ainda e a copia herdada do repo original e mostra os comandos no formato slash legado. Como o Antigravity usa linguagem natural, use a tabela da secao [Como usar](#como-usar-linguagem-natural) como referencia canonica de acionamento.
+
+<a id="o-que-mudou-na-v133"></a>
+## O que mudou na v1.3.3
+
+- **Commit:** feat: implementar subagent runtime e config do stitch
+- **Automação de changelog.** `scripts/bump-version.py` agora cria esta seção automaticamente no `README.md` durante o bump de versão.
 
 <a id="o-que-mudou-na-v132"></a>
 ## O que mudou na v1.3.2
