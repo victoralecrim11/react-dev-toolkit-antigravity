@@ -1,10 +1,57 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.2.8
+# React Dev Hub Plugin — Antigravity Edition — v1.3.0
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
-Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/`.
+Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/` + camada agentica opcional.
 
 Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **framework GSD** cruzando os artefatos da pasta `.planning/` com o codigo real, a skill `auditar-seguranca`, que caca as brechas tipicas de codigo gerado rapido, e os **guardrails sempre ativos** de `rules/`, que previnem essas brechas antes de existirem.
 
+## Modelo Agentico
+
+A arquitetura do plugin preserva quatro camadas distintas:
+
+- `Rules` = guardrails permanentes (`seguranca`, `typescript-estrito`)
+- `Skills` = procedimentos reutilizaveis (`ui-ux`, `arquitetura`, `review`, `criar-componente`)
+- `Agents` = especialistas com responsabilidade limitada e contexto focado (`project-orchestrator`, `design-researcher`, `design-director`, `implementation-engineer`, `quality-auditor`)
+- `Orchestrator` = coordenação da ordem e da delegação
+
+O modelo foi pensado para facilitar workflows complexos sem forçar agentes em tarefas simples. Quando a tarefa for pequena, o plugin continua funcionando com `Main Agent` + `Skills`. Quando a tarefa exigir especialização, entra a orquestração agentica.
+
+Fluxo previsto para uma landing page moderna:
+
+```text
+project-orchestrator
+↓
+design-researcher
+↓
+design-director
+↓
+implementation-engineer
+↓
+quality-auditor
+```
+
+A camada agentica é opcional e evolutiva. O plugin continua operacional mesmo sem `agents/`, sem `subagents` ou sem suporte total do runtime do Antigravity.
+## Design first
+
+Quando a tarefa envolver interface nova, visual ou experiência de produto, o fluxo recomendado e:
+
+```text
+Research
+↓
+UI/UX
+↓
+Design Direction
+↓
+DESIGN.md
+↓
+Implementation
+↓
+Review
+```
+
+O objetivo e evitar a armadilha de começar "codando e depois deixando bonito". Em vez disso, o plugin prioriza investigar referencias, resolver a direcao visual e confirmar a especificacao antes da implementacao.
+
+Se a tarefa for bugfix, refactor tecnico, backend ou correção de testes, o design-first continua opcional e proporcional.
 ## Indice
 
 - [React Dev Hub Plugin — Antigravity Edition — v1.2.8](#react-dev-hub-plugin--antigravity-edition--v128)
@@ -81,8 +128,11 @@ O `mcp_config.json` do plugin ja declara os servidores MCP:
 
 - **Vercel** — `https://mcp.vercel.com/`
 - **Higgsfield** — `https://mcp.higgsfield.ai/mcp` (requer API key; edite o `mcp_config.json` e coloque sua chave no placeholder `COLOQUE_SUA_CHAVE_AQUI`)
+- **Stitch** — opcional, desabilitado por padrao (`STITCH_NOT_CONFIGURED`), sem URL ou autenticacao inventada
 
 O Antigravity le o `mcp_config.json` do plugin automaticamente. Para gerenciar via interface: **Settings → Permissions → MCP Tools → Add**.
+
+> Stitch nao e obrigatorio. Se entrar na montagem real de um ambiente de design, ele deve ser tratado como um provider opcional e nunca como dependência do plugin.
 
 ## Como usar (linguagem natural)
 
@@ -151,11 +201,19 @@ react-dev-toolkit-antigravity/
 │   ├── dashboard/SKILL.md
 │   ├── deploy/SKILL.md
 │   ├── gerar-midia/SKILL.md
+│   ├── pesquisar-referencias-ui/SKILL.md
 │   ├── qa-engineer/SKILL.md
 │   ├── react-dev/SKILL.md
 │   ├── review/SKILL.md
 │   ├── setup/SKILL.md
 │   └── ui-ux/SKILL.md
+├── agents/                          # camada agentica opcional (especialistas)
+│   ├── project-orchestrator/agent.md
+│   ├── design-researcher/agent.md
+│   ├── design-director/agent.md
+│   ├── implementation-engineer/agent.md
+│   └── quality-auditor/agent.md
+├── DESIGN.md                        # artefato de design com direcao visual e tokens
 ├── .gitignore
 ├── LICENSE
 ├── manual.html

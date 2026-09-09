@@ -8,6 +8,12 @@
       "headers": {
         "Authorization": "Bearer COLOQUE_SUA_CHAVE_AQUI"
       }
+    },
+    "stitch": {
+      "serverUrl": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "COLOQUE_SUA_CHAVE_AQUI"
+      }
     }
   }
 }

@@ -42,18 +42,36 @@ def frontmatter(path):
     if end == -1:
         return None, "frontmatter nao fechado"
     data = {}
+    current_key = None
     for line in text[4:end].splitlines():
         if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if line.startswith(" ") and not line.startswith("  "):
+            # YAML de lista ou bloco indentado simples
+            pass
+        if line.startswith(" ") and current_key is not None:
+            if not line.lstrip().startswith("-"):
+                return None, f"linha sem ':' no frontmatter: {line!r}"
+            item = line.strip()
+            if item.startswith("-"):
+                item = item[1:].strip()
+            if not isinstance(data.get(current_key), list):
+                data[current_key] = []
+            data[current_key].append(item)
             continue
         if ":" not in line:
             return None, f"linha sem ':' no frontmatter: {line!r}"
         k, v = line.split(":", 1)
+        current_key = k.strip()
         v = v.strip()
+        if not v:
+            data[current_key] = []
+            continue
         if v.lower() in ("true", "yes", "on", "1"):
             v = True
         elif v.lower() in ("false", "no", "off", "0"):
             v = False
-        data[k.strip()] = v
+        data[current_key] = v
     return data, None
 
 
@@ -100,6 +118,31 @@ for f in skill_files:
     if not data.get("description"):
         E(f"{f}: frontmatter sem description")
 
+# ---------- agents ----------
+agent_files = sorted(glob.glob("agents/*/agent.md"))
+if agent_files:
+    O(f"{len(agent_files)} agents encontrados")
+    seen_names = {}
+    for f in agent_files:
+        data, err = frontmatter(f)
+        if err:
+            E(f"{f}: {err}")
+            continue
+        name = data.get("name")
+        if not name:
+            E(f"{f}: frontmatter sem name")
+        if not data.get("description"):
+            E(f"{f}: frontmatter sem description")
+        if not data.get("tools"):
+            E(f"{f}: frontmatter sem tools")
+        if name:
+            if name in seen_names:
+                E(f"agent duplicado: {name} em {seen_names[name]} e {f}")
+            else:
+                seen_names[name] = f
+else:
+    O("nenhum agent encontrado em agents/*/agent.md (opcional)")
+
 # ---------- commands ----------
 cmd_files = sorted(glob.glob("commands/*.md"))
 for f in cmd_files:
@@ -125,6 +168,7 @@ found_secrets = []
 scan_files = (
     glob.glob("commands/*.md")
     + glob.glob("skills/**/*.md", recursive=True)
+    + glob.glob("agents/**/*.md", recursive=True)
     + glob.glob("rules/*.md")
     + glob.glob("scripts/*.py")
     + glob.glob("scripts/*.sh")
