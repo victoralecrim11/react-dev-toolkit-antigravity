@@ -16,19 +16,50 @@ A arquitetura do plugin preserva quatro camadas distintas:
 
 O modelo foi pensado para facilitar workflows complexos sem forçar agentes em tarefas simples. Quando a tarefa for pequena, o plugin continua funcionando com `Main Agent` + `Skills`. Quando a tarefa exigir especialização, entra a orquestração agentica.
 
-Fluxo previsto para uma landing page moderna:
+### Architecture Layers
 
 ```text
-project-orchestrator
+Rules
 ↓
-design-researcher
+Skills
 ↓
-design-director
+Agents (opcionais)
 ↓
-implementation-engineer
+Orchestrator
 ↓
-quality-auditor
+Artifacts / Handoffs
+↓
+Implementation
+↓
+QA / Review
+↓
+Deploy
 ```
+
+### Complexity Routing
+
+```text
+Simple
+→ Main Agent + Skill
+
+Standard
+→ Main Agent + Skills coordenadas
+
+Complex
+→ Project Orchestrator + especialistas
+```
+
+### Design artifact relationship
+
+```text
+DESIGN.md
+= Creative Direction / Design Direction
+
+.design/design-system.md
+= Technical Design Contract
+```
+
+`DESIGN.md` concentra objetivo visual, persona, personalidade da marca, princípios visuais, referências e decisão conceitual. O arquivo `.design/design-system.md` concentra tokens técnicos: color tokens, typography, spacing, breakpoints, component tokens e mapeamento para Tailwind / React Native.
 
 A camada agentica é opcional e evolutiva. O plugin continua operacional mesmo sem `agents/`, sem `subagents` ou sem suporte total do runtime do Antigravity.
 ## Design first
@@ -38,20 +69,28 @@ Quando a tarefa envolver interface nova, visual ou experiência de produto, o fl
 ```text
 Research
 ↓
-UI/UX
-↓
-Design Direction
+UI/UX Reasoning
 ↓
 DESIGN.md
 ↓
+.design/design-system.md
+↓
 Implementation
 ↓
-Review
+Validation
 ```
 
-O objetivo e evitar a armadilha de começar "codando e depois deixando bonito". Em vez disso, o plugin prioriza investigar referencias, resolver a direcao visual e confirmar a especificacao antes da implementacao.
+O objetivo é evitar a armadilha de começar "codando e depois deixando bonito". Em vez disso, o plugin prioriza investigar referências, resolver a direção visual e então transformar essa decisão em um contrato técnico quando a interface exigir implementação real.
 
-Se a tarefa for bugfix, refactor tecnico, backend ou correção de testes, o design-first continua opcional e proporcional.
+Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o design-first continua opcional e proporcional.
+
+## Contratos de responsabilidade
+
+- `review` = code review técnico, arquitetura, acessibilidade e segurança de implementação.
+- `qa-engineer` = estratégia de QA, cenários, regressão, bugs e automação de testes.
+- `quality-auditor` = consolidação final de evidências e gate de conclusão.
+- `project-orchestrator` = classifica SIMPLE / STANDARD / COMPLEX e coordena handoffs.
+
 ## Indice
 
 - [React Dev Hub Plugin — Antigravity Edition — v1.3.1](#react-dev-hub-plugin--antigravity-edition--v131)
@@ -213,7 +252,9 @@ react-dev-toolkit-antigravity/
 │   ├── design-director/agent.md
 │   ├── implementation-engineer/agent.md
 │   └── quality-auditor/agent.md
-├── DESIGN.md                        # artefato de design com direcao visual e tokens
+├── DESIGN.md                        # design direction / criativa
+├── .design/
+│   └── design-system.md             # technical design contract
 ├── .gitignore
 ├── LICENSE
 ├── manual.html
