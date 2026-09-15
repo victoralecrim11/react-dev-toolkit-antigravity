@@ -30,9 +30,11 @@ Tutor: use para explicar decisões durante a construção.
 
 Tech Lead: use para direção do projeto, CI/CD, padrões, riscos e decisões de longo prazo.
 
-## Estruturas
+## Architecture Level (Estruturas Proporcionais)
 
-Beginner: use em projetos acadêmicos, MVPs simples, portfólio e primeiros apps React Native.
+O nível arquitetural do projeto deve ser proporcional à necessidade real (regras de negócio, escalabilidade, equipe), e é **independente** da Complexidade do Workflow (`SIMPLE`, `STANDARD`, `COMPLEX`). Um projeto de Workflow `COMPLEX` pode (e frequentemente deve) ter um Architecture Level `Mid-Level` ou `Junior`. **`COMPLEX` não significa `Senior`.**
+
+Beginner: use em projetos acadêmicos, MVPs simples, portfólio e primeiros apps React Native. Estrutura didática mínima.
 
 ```text
 src/
@@ -45,9 +47,9 @@ src/
 
 Junior: adicione `hooks` e `utils` quando houver mais telas, formulários, APIs ou reutilização frequente de lógica.
 
-Mid-Level: adicione `features`, `store` e `shared` quando houver múltiplas funcionalidades, integrações, estado global complexo ou mais de uma pessoa desenvolvendo.
+Mid-Level: adicione `features`, `store` e `shared` quando houver múltiplas funcionalidades, integrações, estado global complexo ou mais de uma pessoa desenvolvendo. Separação clara de responsabilidades sem abstrações excessivas.
 
-Senior: use domínio, casos de uso, inversão de dependência, modularização avançada, DDD ou Clean Architecture somente quando regras de negócio, equipe e longevidade justificarem.
+Senior: use domínio, casos de uso, inversão de dependência, modularização avançada, DDD ou Clean Architecture **somente** quando regras de negócio, equipe e longevidade justificarem.
 
 Pastas devem existir por responsabilidade real. Não crie camadas porque um tutorial usa.
 
