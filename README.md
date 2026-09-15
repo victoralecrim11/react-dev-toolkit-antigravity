@@ -1,4 +1,4 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.3.5
+# React Dev Hub Plugin — Antigravity Edition — v1.4.0
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
 Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/` + camada agentica opcional.
@@ -7,12 +7,13 @@ Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **f
 
 ## Modelo Agentico
 
-A arquitetura do plugin preserva quatro camadas distintas:
+A arquitetura do plugin preserva responsabilidades distintas:
 
 - `Rules` = guardrails permanentes (`seguranca`, `typescript-estrito`)
 - `Skills` = procedimentos reutilizaveis (`ui-ux`, `arquitetura`, `review`, `criar-componente`)
-- `Agents` = especialistas com responsabilidade limitada e contexto focado (`project-orchestrator`, `design-researcher`, `design-director`, `implementation-engineer`, `quality-auditor`)
-- `Orchestrator` = coordenação da ordem e da delegação
+- `Root Runtime` = Runtime Delegator, Workflow State Host, Handoff Transport e Tool Proxy quando necessário
+- `Project Orchestrator` = Logical Planner, Classifier, Router e Phase Ownership Planner
+- `Specialists` = Logical Owners e Content Authors das fases e outputs
 
 O modelo foi pensado para facilitar workflows complexos sem forçar agentes em tarefas simples. Quando a tarefa for pequena, o plugin continua funcionando com `Main Agent` + `Skills`. Quando a tarefa exigir especialização, entra a orquestração agentica.
 
@@ -23,17 +24,23 @@ Rules
 ↓
 Skills
 ↓
-Agents (opcionais)
+Root Runtime
 ↓
-Orchestrator
+Project Orchestrator (Logical Planner)
+↓
+Delegation Plan
+↓
+Root Runtime Delegator
+↓
+Specialists
 ↓
 Artifacts / Handoffs
 ↓
-Implementation
+Validation
 ↓
-QA / Review
+Delivery Report
 ↓
-Deploy
+Quality Gate
 ```
 
 ### Complexity Routing
@@ -46,7 +53,25 @@ Standard
 → Main Agent + Skills coordenadas
 
 Complex
-→ Project Orchestrator + especialistas
+→ Root
+→ Project Orchestrator (Logical Planning)
+→ Return Delegation Plan
+→ Root executes specialists
+→ Delivery Report
+→ Quality Gate
+```
+
+No Antigravity CLI 1.2.3 validado, a topologia preferencial e `ROOT_ROUTED`: o Root invoca o planner, recebe o plano, chama os specialists diretamente e transporta os handoffs. Nested delegation nao e requisito do plugin e foi observada como `NOT SUPPORTED` nesse runtime.
+
+O Root pode materializar um canonical output como `ROOT_PROXY` quando o runtime nao permitir a escrita fisica pelo specialist. Nesse caso, Logical Owner e Content Author continuam sendo o specialist; o Root e apenas Runtime Delegator e Tool Executor. Normalizacoes mecanicas da ferramenta, como newline final, line ending ou encoding, nao sao intervencao semantica. O Root nao pode reescrever ou complementar o payload.
+
+```text
+Artifact: DESIGN.md
+Logical Owner: design-director
+Content Author: design-director
+Runtime Delegator: Root Agent
+Tool Executor: Root Agent
+Tool Execution Topology: ROOT_PROXY
 ```
 
 ### Design artifact relationship
@@ -89,11 +114,11 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
 - `review` = code review técnico, arquitetura, acessibilidade e segurança de implementação.
 - `qa-engineer` = estratégia de QA, cenários, regressão, bugs e automação de testes.
 - `quality-auditor` = consolidação final de evidências e gate de conclusão.
-- `project-orchestrator` = classifica SIMPLE / STANDARD / COMPLEX e coordena handoffs.
+- `project-orchestrator` = classifica SIMPLE / STANDARD / COMPLEX, planeja ownership e handoffs e retorna o Delegation Plan ao Root.
 
 ## Indice
 
-- [React Dev Hub Plugin — Antigravity Edition — v1.3.5](#react-dev-hub-plugin--antigravity-edition--v135)
+- [React Dev Hub Plugin — Antigravity Edition — v1.4.0](#react-dev-hub-plugin--antigravity-edition--v140)
   - [Indice](#indice)
   - [Instalacao](#instalacao)
     - [Desinstalar](#desinstalar)
@@ -111,7 +136,8 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
   - [Project Hub local](#project-hub-local)
     - [Onde ficam os dados](#onde-ficam-os-dados)
   - [Relacao com o repo original](#relacao-com-o-repo-original)
-- [O que mudou na v1.3.5](#o-que-mudou-na-v135)
+- [O que mudou na v1.4.0](#o-que-mudou-na-v140)
+  - [O que mudou na v1.3.5](#o-que-mudou-na-v135)
   - [O que mudou na v1.2.7](#o-que-mudou-na-v127)
   - [O que mudou na v1.2.6](#o-que-mudou-na-v126)
   - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
@@ -394,6 +420,15 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 | Caminho global | plugin cache antigo | `~/.gemini/config/plugins/` |
 
 > O `manual.html` deste repo ainda e a copia herdada do repo original e mostra os comandos no formato slash legado. Como o Antigravity usa linguagem natural, use a tabela da secao [Como usar](#como-usar-linguagem-natural) como referencia canonica de acionamento.
+
+<a id="o-que-mudou-na-v140"></a>
+## O que mudou na v1.4.0
+
+- **Orquestracao `ROOT_ROUTED`.** O Project Orchestrator atua como Logical Planner e retorna o Delegation Plan; o Root atua como Runtime Delegator, Workflow State Host e transportador de handoffs.
+- **Ownership explicito.** Logical Owner, Content Author, Runtime Delegator e Tool Executor sao dimensoes independentes. O Root pode materializar canonical outputs como `ROOT_PROXY` sem transferir ownership ou caracterizar fallback.
+- **Metadata de runtime corrigida.** O `project-orchestrator` usa `mainAgent: false` e `subagent: true`, configuracao validada no Antigravity CLI 1.2.3. `tools:` permanece ausente para evitar identificadores incompatíveis com o registry.
+- **Validacao baseada em evidencia.** Build Validation continua separada de Quality Gate, e ausencia de evidencia nunca equivale a PASS.
+- **Compatibilidade e limites conhecidos.** Nested delegation nao e requisito e foi observada como `NOT SUPPORTED` no Antigravity CLI 1.2.3. Outputs em linguagem natural podem ocasionalmente usar aliases, embora os enums canônicos permaneçam normativos. Tools podem normalizar newline, line ending ou encoding sem constituir Semantic Intervention.
 
 <a id="o-que-mudou-na-v135"></a>
 ## O que mudou na v1.3.5

@@ -170,6 +170,21 @@ if agent_files:
                 E(f"agent duplicado: {name} em {seen_names[name]} e {f}")
             else:
                 seen_names[name] = f
+
+    orchestrator_path = seen_names.get("project-orchestrator")
+    if orchestrator_path:
+        orchestrator_meta, orchestrator_err = frontmatter(orchestrator_path)
+        if orchestrator_err:
+            E(f"{orchestrator_path}: metadata do orchestrator invalida")
+        elif orchestrator_meta.get("mainAgent") is not False or orchestrator_meta.get("subagent") is not True:
+            E(
+                f"{orchestrator_path}: esperado mainAgent: false e subagent: true "
+                "para a topologia ROOT_ROUTED validada no Antigravity CLI 1.2.3"
+            )
+        elif "tools" in orchestrator_meta:
+            E(f"{orchestrator_path}: frontmatter tools nao deve ser declarado")
+        else:
+            O("project-orchestrator: metadata ROOT_ROUTED ok e sem tools")
 else:
     O("nenhum agent encontrado em agents/*/agent.md (opcional)")
 

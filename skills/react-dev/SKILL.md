@@ -22,11 +22,11 @@ independente: leia só o que a tarefa exige, não todos.
 | GSD: analisar projeto feito com o framework (`.planning/`, spec vs código) | `references/gsd-analyzer.md` |
 | Project Hub: schema da API, perfil do dev, registros | `references/dashboard-projetos.md` |
 
-Os caminhos são relativos a `./skills/react-dev/`. No Antigravity, o plugin
-fica em `~/.gemini/antigravity-cli/plugins/plugin-react-dev-toolkit/`. No
-Claude Code, o plugin é cacheado em `~/.claude/plugins/cache/...`. Em ambos,
-resolva sempre por caminhos relativos ao diretorio do plugin, nunca por
-caminhos do projeto do usuario.
+Os caminhos são relativos a `./skills/react-dev/`. No Antigravity, a instalação
+ativa usa o diretório `react-dev-toolkit-antigravity`. No Claude Code, o plugin
+é cacheado em `~/.claude/plugins/cache/...`. Em ambos, resolva sempre pelos
+caminhos relativos indicados acima, a partir do diretório do plugin, nunca por
+caminhos do projeto do usuário.
 
 ## Regras que valem para tudo
 
