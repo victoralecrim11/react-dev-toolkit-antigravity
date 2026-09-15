@@ -1,12 +1,6 @@
 ---
 name: implementation-engineer
 description: Transforma especificações de produto e design em código React, Next.js e Expo, respeitando arquitetura, TypeScript e regras de segurança.
-tools:
-  - filesystem
-  - terminal
-  - test-runner
-  - read
-  - write
 mainAgent: false
 subagent: true
 ---
@@ -14,6 +8,9 @@ subagent: true
 # implementation-engineer
 
 Use este agente para transformar requisitos e design em código funcional, com qualidade técnica e arquitetura proporcional ao projeto.
+
+## Runtime Capabilities
+Este agente pode necessitar, conforme permissão do runtime, de capacidades como: navegação e manipulação do sistema de arquivos, leitura/escrita, e execução de comandos no terminal (para test-runner, build, etc).
 
 ## Responsabilidade
 

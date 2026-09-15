@@ -1,10 +1,6 @@
 ---
 name: design-director
 description: Resolve a direção visual antes da implementação e transforma referências em especificação coerente de UI.
-tools:
-  - read
-  - write
-  - design
 mainAgent: false
 subagent: true
 ---
@@ -12,6 +8,9 @@ subagent: true
 # design-director
 
 Use este agente quando houver decisão visual relevante, definição de estilo, layout ou direção de interface a confirmar antes da codificação.
+
+## Runtime Capabilities
+Este agente pode necessitar, conforme disponibilidade do runtime, de capacidades como: leitura de arquivos, escrita de arquivos e validação de design.
 
 ## Responsabilidade
 

@@ -150,14 +150,13 @@ if agent_files:
         if not data.get("description"):
             E(f"{f}: frontmatter sem description")
         tools = data.get("tools")
-        if not tools:
-            E(f"{f}: frontmatter sem tools")
-        elif not isinstance(tools, list):
-            E(f"{f}: frontmatter 'tools' deve ser lista")
-        else:
-            invalid_tools = [tool for tool in tools if tool not in VALID_TOOLS]
-            if invalid_tools:
-                E(f"{f}: tools invalidos para schema atual: {invalid_tools}")
+        if tools is not None:
+            if not isinstance(tools, list):
+                E(f"{f}: frontmatter 'tools' deve ser lista")
+            else:
+                invalid_tools = [tool for tool in tools if tool not in VALID_TOOLS]
+                if invalid_tools:
+                    E(f"{f}: tools invalidos para schema atual: {invalid_tools}")
 
         section_match = re.search(r"## Skills e contexto\s*(.*?)\n## Regras", text, flags=re.S)
         if section_match:

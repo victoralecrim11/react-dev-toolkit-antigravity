@@ -1,10 +1,6 @@
 ---
 name: design-researcher
 description: Pesquisa referências visuais e de UX para orientar design clusters, padrões de mercado e direção antes da implementação.
-tools:
-  - web
-  - browser
-  - read
 mainAgent: false
 subagent: true
 ---
@@ -12,6 +8,9 @@ subagent: true
 # design-researcher
 
 Use este agente quando o objetivo exigir referência visual atualizada, benchmarking de UI, análise de design systems ou comparação de padrões de mercado.
+
+## Runtime Capabilities
+Este agente pode necessitar, conforme permissão do runtime, de capacidades como: pesquisa na web, navegação em browser simulado e leitura de arquivos locais.
 
 ## Responsabilidade
 
