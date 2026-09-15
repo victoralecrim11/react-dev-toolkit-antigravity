@@ -46,8 +46,8 @@ if existe agy; then
       aviso "plugin CLI removido: $cli_path/$PLUGIN"
     fi
   fi
-  agy plugin update "$PLUGIN" \
-    || falhas+=('agy plugin update')
+  agy plugin install . \
+    || falhas+=('agy plugin install .')
   ok 'feito. Reinicie o Antigravity para carregar os arquivos novos.'
 else
   aviso "CLI 'agy' nao encontrada no PATH -- pulando."

@@ -46,8 +46,9 @@ if (Existe 'agy') {
             }
         }
     }
-    agy plugin update $Plugin
-    if ($LASTEXITCODE -ne 0) { $falhas += 'agy plugin update' }
+
+    agy plugin install .
+    if ($LASTEXITCODE -ne 0) { $falhas += 'agy plugin install .' }
     Ok 'feito. Reinicie o Antigravity para carregar os arquivos novos.'
 } else {
     Aviso "CLI 'agy' nao encontrada no PATH -- pulando."
