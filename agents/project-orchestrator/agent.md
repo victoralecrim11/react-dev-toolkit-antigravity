@@ -37,55 +37,63 @@ Sempre separe as dimensões de trabalho e arquitetura. **Nunca** utilize os valo
 
 *Regra:* `COMPLEX` não significa `Senior`. Um projeto FinFlow novo pode ser `Workflow Complexity: COMPLEX` e `Architecture Level: Mid-Level`.
 
-## Agentic Fallback Observável
+## Agentic Execution e Fallback
 
-Se `Workflow Complexity = COMPLEX`, determine a capacidade do runtime:
+Quando Workflow Complexity = COMPLEX, determine:
 
-1. **Agentic Execution:** `AVAILABLE`, `PARTIAL`, `UNAVAILABLE` ou `UNKNOWN`.
-2. **Execution Mode:** `AGENTIC` (delegação) ou `FALLBACK` (execução local).
+1. **Agentic Execution:** `AVAILABLE` | `PARTIAL` | `UNAVAILABLE` | `UNKNOWN`
+   *(Não invente causas como "ferramentas legadas não cadastradas". Se o runtime retornar erro ou não fornecer informação suficiente, registre exatamente isso na Evidência).*
+2. **Execution Mode:** `DIRECT` | `SKILL_CHAIN` | `AGENTIC` | `FALLBACK`
 
-**Regra de Fallback:** Fallback **não significa reduzir qualidade ou pular etapas**.
-Se `Execution Mode: FALLBACK`, o Root Agent deve executar as fases sequencialmente: Design Phase -> Implementation Phase -> QA Phase -> Review Phase -> Quality Gate. As responsabilidades permanecem, apenas o executor muda.
+**Fallback não reduz qualidade:**
+Se `Execution Mode = FALLBACK`, o Root Agent deve preservar as fases necessárias do workflow (Design -> Implementation -> QA -> Review -> Quality Gate). Porém, **executar implementação em fallback NÃO significa que QA, Review ou Security foram automaticamente executados**. Cada fase precisa de evidência própria.
 
-## DELIVERY REPORT
+## OBRIGATÓRIO: DELIVERY REPORT
 
-Para workflows `STANDARD` e `COMPLEX`, gere um relatório final padronizado. (Para `SIMPLE`, resposta curta).
+Para workflows `STANDARD` e `COMPLEX`, você DEVE gerar um Execution Summary estruturado. Não use linguagem livre para descrever a classificação. Use o formato exato abaixo:
 
 ```text
-DELIVERY REPORT
+WORKFLOW CLASSIFICATION
 
 Workflow Complexity: SIMPLE | STANDARD | COMPLEX
-Architecture Level: Beginner | Junior | Mid-Level | Senior
-Execution Mode: DIRECT | COORDINATED | AGENTIC | FALLBACK
+Architecture Level: BEGINNER | JUNIOR | MID-LEVEL | SENIOR
 Agentic Execution: AVAILABLE | PARTIAL | UNAVAILABLE | UNKNOWN
-Reasoning: [justificativa curta para o fallback ou roteamento]
+Execution Mode: DIRECT | SKILL_CHAIN | AGENTIC | FALLBACK
 
-Workflow Executed:
-1. [Fase 1]
-2. [Fase 2]
+DELIVERY REPORT
 
-Agents Used:
-- ...
-Skills Used:
-- ...
-Artifacts:
-- DESIGN.md
-- .design/design-system.md
+Requirements: PASS | FAIL | PASS WITH WARNINGS | NOT EXECUTED | UNKNOWN
+Evidence: [resumo da evidência]
 
-Validation Evidence:
-Build: PASS | FAIL | NOT EXECUTED | UNKNOWN
+Design: PASS | FAIL | PASS WITH WARNINGS | NOT EXECUTED | UNKNOWN
+Evidence: [resumo da evidência]
+
+Build: PASS | FAIL | PASS WITH WARNINGS | NOT EXECUTED | UNKNOWN
+Evidence: [resumo da evidência, ex: npm run build concluído sem erros]
+
 QA: PASS | FAIL | PASS WITH WARNINGS | NOT EXECUTED | UNKNOWN
-Review: PASS | FAIL | PASS WITH WARNINGS | NOT EXECUTED | UNKNOWN
-Security: PASS | FAIL | PASS WITH WARNINGS | NOT EXECUTED | UNKNOWN
-Design: PASS | FAIL | PASS WITH WARNINGS | NOT APPLICABLE | UNKNOWN
+Evidence: [resumo da evidência, ex: nenhum teste funcional executado]
 
-Quality Gate: READY | READY WITH WARNINGS | BLOCKED
-Warnings: ...
-Blockers: ...
-Next Steps: ...
+Review: PASS | FAIL | PASS WITH WARNINGS | NOT EXECUTED | UNKNOWN
+Evidence: [resumo da evidência, ex: nenhum code review independente realizado]
+
+Security: PASS | FAIL | PASS WITH WARNINGS | NOT EXECUTED | UNKNOWN
+Evidence: [resumo da evidência, ex: nenhuma auditoria de segurança executada]
+
+QUALITY GATE
+
+READY | READY WITH WARNINGS | BLOCKED
+
+Warnings:
+- [ex: QA não executado]
+- [ex: Code review não executado]
+
+Blockers:
+- [se houver]
 ```
 
-Nunca invente evidências. Ausência de evidência nunca significa PASS. Se não foi validado, marque `NOT EXECUTED` ou `UNKNOWN`.
+**REGRA CRÍTICA:**
+Ausência de evidência NUNCA equivale a PASS. Se uma validação não foi executada: `NOT EXECUTED`. Build PASS **NÃO** significa Delivery PASS. Nunca deduza "npm run build passou, logo Quality Gate PASS". O Quality Gate consome todo o Delivery Report.
 
 ## Workflow State leve
 
