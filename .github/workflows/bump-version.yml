@@ -20,10 +20,10 @@ on:
   workflow_dispatch:
     inputs:
       part:
-        description: "Parte da versao a incrementar"
+        description: "Parte da versao a incrementar, ou current para publicar a versao atual"
         type: choice
         default: patch
-        options: [patch, minor, major]
+        options: [current, patch, minor, major]
 
 permissions:
   contents: write
@@ -51,11 +51,17 @@ jobs:
           CURRENT_VERSION=$(python3 -c 'import json; print(json.load(open("plugin.json", encoding="utf-8"))["version"])')
 
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            python3 scripts/bump-version.py --"$PART" | tee bump.log
-            VERSION=$(python3 -c 'import re; print(re.search(r"::set-version::([^\s]+)", open("bump.log", encoding="utf-8").read()).group(1))')
-            rm bump.log
-            echo "explicit_version_change=NO" >> "$GITHUB_OUTPUT"
-            echo "auto_bump=YES" >> "$GITHUB_OUTPUT"
+            if [[ "$PART" == "current" ]]; then
+              VERSION="$CURRENT_VERSION"
+              echo "explicit_version_change=NO" >> "$GITHUB_OUTPUT"
+              echo "auto_bump=NO" >> "$GITHUB_OUTPUT"
+            else
+              python3 scripts/bump-version.py --"$PART" | tee bump.log
+              VERSION=$(python3 -c 'import re; print(re.search(r"::set-version::([^\s]+)", open("bump.log", encoding="utf-8").read()).group(1))')
+              rm bump.log
+              echo "explicit_version_change=NO" >> "$GITHUB_OUTPUT"
+              echo "auto_bump=YES" >> "$GITHUB_OUTPUT"
+            fi
           else
             PREVIOUS_VERSION=$(BEFORE_SHA="$BEFORE_SHA" python3 - <<'PY'
           import json
@@ -148,6 +154,8 @@ jobs:
         run: |
           TAG="v$V"
           RELEASE_SHA=$(git rev-parse HEAD)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --tags origin
 
           if git show-ref --verify --quiet "refs/tags/$TAG"; then
