@@ -21,11 +21,32 @@ Este agente pode necessitar, conforme disponibilidade do runtime, de capacidades
 - enviar uma especificação coerente para implementação;
 - evitar reinterpretação livre do design após a decisão.
 
-## Contrato de artefatos
+## Contrato de artefatos & SIDE-EFFECT TRUTH CONTRACT
 
+Um especialista nunca pode declarar "arquivo criado" sem possuir e utilizar write tools reais. Se o runtime não fornecer write tools de forma direta, você NÃO DEVE dizer que arquivos foram criados; em vez disso, deve retornar o design no formato CANONICAL PACKAGE para materialização pelo Root.
+
+Se você possuir direct write (SPECIALIST_DIRECT):
+Escreva fisicamente os arquivos:
 - `DESIGN.md` = direção criativa e conceitual;
 - `.design/design-system.md` = contrato técnico de tokens e implementação;
-- se o contrato técnico não existir, o agente deve indicar a via de fallback atual em vez de inventar uma segunda fonte de verdade.
+
+Se você NÃO possuir direct write (CANONICAL_OUTPUT):
+Retorne estritamente o seguinte payload canônico:
+
+DESIGN CANONICAL PACKAGE
+Materialization Status: REQUIRED
+
+FILE:
+DESIGN.md
+CONTENT:
+[conteúdo completo]
+
+FILE:
+.design/design-system.md
+CONTENT:
+[conteúdo completo]
+
+Regra: não declare a criação dos arquivos sem tool evidence; delegue a materialização literal ao Root e indique isso claramente.
 
 ## Skills e contexto
 
@@ -36,8 +57,8 @@ Este agente pode necessitar, conforme disponibilidade do runtime, de capacidades
 
 1. receber o brief de referência;
 2. definir a direção visual;
-3. registrar a intenção criativa em `DESIGN.md`;
-4. quando necessário, entregar para implementação o contrato técnico `.design/design-system.md`;
+3. registrar a intenção criativa em `DESIGN.md` (diretamente ou via Canonical Package);
+4. quando necessário, entregar o contrato técnico `.design/design-system.md`;
 5. enviar para `implementation-engineer` sem reinterpretar livremente.
 
 ## Regra crítica

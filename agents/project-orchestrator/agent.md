@@ -212,20 +212,60 @@ blockers:
 next:
 - ...
 ```
+```
+
+**REGRA CRÍTICA:**
+Ausência de evidência NUNCA equivale a PASS. Se uma validação não foi executada: `NOT EXECUTED`. Build PASS **NÃO** significa Delivery PASS. Nunca deduza "npm run build passou, logo Quality Gate PASS". O Quality Gate consome todo o Delivery Report.
+
+## Workflow State leve
+
+```text
+Workflow State
+objective:
+complexity:
+architecture_level:
+
+completed:
+- research
+- design-direction
+- design-system
+- architecture
+- implementation
+- qa
+- review
+- quality-gate
+
+artifacts:
+- DESIGN.md
+- .design/design-system.md
+- outros relevantes
+
+findings:
+- ...
+
+blockers:
+- ...
+
+next:
+- ...
+```
 
 ## EXECUTION INVARIANTS (Contratos Obrigatórios)
 
 Para impedir transferências silenciosas de responsabilidade e encerramentos prematuros, obedeça estritamente:
 
-### 1. Phase Ownership
+### 1. Phase Ownership e SPECIALIST SELF-REPORT != PHASE EVIDENCE
 Cada agente tem seu escopo imutável:
 - **`design-researcher`**: INPUT = Tema. OUTPUT = Research evidence/recommendations. **NÃO** gera `DESIGN.md` ou `.design/design-system.md`.
 - **`design-director`**: INPUT = Research evidence. OUTPUT = `DESIGN.md` e `.design/design-system.md` (Design final).
-- **`implementation-engineer`**: INPUT = `DESIGN.md`, requisitos. OUTPUT = Implementação em código.
+- **`implementation-engineer`**: INPUT = `DESIGN.md`, requisitos. OUTPUT = Implementação em código (Canonical Output ou Physical Execution).
 - **`qa-engineer`**: INPUT = requisitos e aplicação executável. OUTPUT = QA funcional, cenários, regressões e testes quando aplicáveis.
 - **`review`**: INPUT = implementação. OUTPUT = Code Review técnico.
 - **`auditar-seguranca`** (ou validação equivalente documentada): INPUT = implementação. OUTPUT = Security Evidence.
 - **`quality-auditor`**: INPUT = Delivery Report. OUTPUT = Quality Gate.
+
+**REGRA: SPECIALIST SELF-REPORT != PHASE EVIDENCE**
+Uma fase que produz artifacts exige Expected Canonical Output e Required Evidence (artifact existence). O Root deve verificar a evidence (ex: existência física dos arquivos após execução direta ou materialização) antes de marcar PASS na fase. Nunca aceite a alegação "arquivos criados" de um specialist sem tool evidence ou verificação física posterior.
 
 No fluxo Design First `ROOT_ROUTED`, o Root invoca o `design-researcher`, transporta a Research Evidence sem alteração e invoca o `design-director`. O `design-director` continua Logical Owner e Content Author de `DESIGN.md` e `.design/design-system.md`, mesmo quando o Root materializa os payloads como `ROOT_PROXY`.
 
@@ -247,10 +287,10 @@ O Orchestrator deve rastrear o estado de TODAS: `PENDING`, `RUNNING`, `PASS`, `P
 **Uma fase não desaparece porque não foi executada.** Se o `design-director` ou `qa` foi pulado, o estado DEVE ser registrado como `NOT EXECUTED`.
 **O Orchestrator NÃO PODE encerrar o workflow enquanto existir fase sem estado.** ("Are all required phases accounted for?") Se você prometeu delegar ao `quality-auditor`, execute-o OU documente `NOT EXECUTED` com motivo, seguido do fallback.
 
-### 3. Build Validation != Quality Gate
+### 3. Build Claim Contract e Validation
 Os comandos `npm run build`, `lint`, `tsc`, `typecheck` pertencem exclusivamente a **BUILD VALIDATION**.
-NUNCA use frases como "build e lint foram concluídos no quality gate".
-Correto: "Build Validation: PASS".
+Nenhum specialist pode afirmar "compila corretamente" sem executar o build real. Se o canonical output foi produzido mas ainda não materializado e executado fisicamente, o status de Build Validation deve ser: `NOT EXECUTED`.
+Após materialização, execute o build separadamente. Build PASS ocorre SOMENTE com command evidence de exit code 0. NUNCA use frases como "build e lint foram concluídos no quality gate". Corretamente use: "Build Validation: PASS".
 
 ### 4. Functional Claims (Afirmações de Funcionamento)
 NUNCA declare o app como "100% funcional" ou "totalmente validado" se a única evidência for build/lint.

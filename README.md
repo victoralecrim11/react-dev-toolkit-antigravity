@@ -1,4 +1,4 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.5.0
+# React Dev Hub Plugin — Antigravity Edition — v1.5.1
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
 Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/` + camada agentica opcional.
@@ -138,7 +138,7 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
 
 ## Indice
 
-- [React Dev Hub Plugin — Antigravity Edition — v1.5.0](#react-dev-hub-plugin--antigravity-edition--v150)
+- [React Dev Hub Plugin — Antigravity Edition — v1.5.1](#react-dev-hub-plugin--antigravity-edition--v151)
   - [Compliance e qualidade do produto](#compliance-e-qualidade-do-produto)
   - [Indice](#indice)
   - [Instalacao](#instalacao)
@@ -150,6 +150,8 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
   - [Guardrails normativos (`rules/`)](#guardrails-normativos-rules)
   - [Seguranca](#seguranca)
   - [Projetos feitos com o framework GSD](#projetos-feitos-com-o-framework-gsd)
+  - [Seguranca](#seguranca)
+  - [Projetos feitos com o framework GSD](#projetos-feitos-com-o-framework-gsd)
   - [Atualizar depois de um push](#atualizar-depois-de-um-push)
     - [Atualizar o plugin](#atualizar-o-plugin)
   - [Padroes tecnicos](#padroes-tecnicos)
@@ -157,12 +159,9 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
   - [Project Hub local](#project-hub-local)
     - [Onde ficam os dados](#onde-ficam-os-dados)
   - [Relacao com o repo original](#relacao-com-o-repo-original)
-- [What changed in v1.5.0](#what-changed-in-v150)
+  - [What changed in v1.5.1](#what-changed-in-v151)
+  - [What changed in v1.5.0](#what-changed-in-v150)
   - [O que mudou na v1.4.1](#o-que-mudou-na-v141)
-  - [O que mudou na v1.3.5](#o-que-mudou-na-v135)
-  - [O que mudou na v1.2.7](#o-que-mudou-na-v127)
-  - [O que mudou na v1.2.6](#o-que-mudou-na-v126)
-  - [O que mudou na v1.2.5](#o-que-mudou-na-v125)
   - [O que mudou na v1.2.4](#o-que-mudou-na-v124)
   - [O que mudou na v1.2.3](#o-que-mudou-na-v123)
   - [O que mudou na v1.2.2](#o-que-mudou-na-v122)
@@ -439,6 +438,17 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 | Caminho global | plugin cache antigo | `~/.gemini/config/plugins/` |
 
 > O `manual.html` deste repo ainda e a copia herdada do repo original e mostra os comandos no formato slash legado. Como o Antigravity usa linguagem natural, use a tabela da secao [Como usar](#como-usar-linguagem-natural) como referencia canonica de acionamento.
+
+<a id="what-changed-in-v151"></a>
+## What changed in v1.5.1
+
+- fixes false specialist side-effect claims;
+- adds explicit SPECIALIST_DIRECT / CANONICAL_OUTPUT execution modes;
+- requires canonical packages when direct write is unavailable;
+- requires physical artifact verification before phase PASS;
+- separates specialist self-report from phase evidence;
+- requires actual command evidence for build claims;
+- strengthens ROOT_PROXY materialization integrity.
 
 <a id="what-changed-in-v150"></a>
 ## What changed in v1.5.0
