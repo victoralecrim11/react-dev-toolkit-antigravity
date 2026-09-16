@@ -1,6 +1,6 @@
 # Regra: TypeScript estrito e React moderno
 
-Restricoes sempre ativas ao gerar ou alterar codigo React, Next.js e Expo neste plugin.
+Restricoes normativas ao gerar ou alterar codigo React, Next.js e Expo neste plugin. A injeção inicial destas rules não é garantida no CLI 1.2.3; verifique conformidade por evidência.
 
 ## TypeScript
 

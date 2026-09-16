@@ -1,8 +1,9 @@
 name: Bump da versao do plugin
 
-# A cada push na main, sincroniza a versao no plugin.json, README.md e
-# manual.html e cria a tag. Isso e o que faz um commit chegar aos usuarios:
-# o Antigravity compara o campo "version" para detectar atualizacao.
+# A cada push na main, preserva uma versao explicitamente alterada no commit
+# ou incrementa o patch quando a versao nao mudou. Depois valida e cria a tag.
+# Isso e o que faz um commit chegar aos usuarios: o Antigravity compara o
+# campo "version" para detectar atualizacao.
 #
 # Nao reage ao commit que o proprio bot cria, para nao entrar em loop de push.
 
@@ -40,23 +41,98 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Sincronizar a versao nos arquivos
-        id: bump
+      - name: Selecionar a versao da release
+        id: version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          PART: ${{ inputs.part || 'patch' }}
         run: |
-          python3 scripts/bump-version.py --${{ inputs.part || 'patch' }} | tee bump.log
-          echo "version=$(grep -oP '::set-version::\K.*' bump.log)" >> "$GITHUB_OUTPUT"
-          rm bump.log
+          CURRENT_VERSION=$(python3 -c 'import json; print(json.load(open("plugin.json", encoding="utf-8"))["version"])')
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            python3 scripts/bump-version.py --"$PART" | tee bump.log
+            VERSION=$(python3 -c 'import re; print(re.search(r"::set-version::([^\s]+)", open("bump.log", encoding="utf-8").read()).group(1))')
+            rm bump.log
+            echo "explicit_version_change=NO" >> "$GITHUB_OUTPUT"
+            echo "auto_bump=YES" >> "$GITHUB_OUTPUT"
+          else
+            PREVIOUS_VERSION=$(BEFORE_SHA="$BEFORE_SHA" python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+
+          before = os.environ["BEFORE_SHA"]
+          if not before or set(before) == {"0"}:
+              print("")
+          else:
+              try:
+                  raw = subprocess.check_output(
+                      ["git", "show", f"{before}:plugin.json"],
+                      text=True,
+                      stderr=subprocess.DEVNULL,
+                  )
+                  print(json.loads(raw)["version"])
+              except (subprocess.CalledProcessError, KeyError, json.JSONDecodeError):
+                  print("")
+          PY
+            )
+
+            if [[ -z "$PREVIOUS_VERSION" || "$PREVIOUS_VERSION" != "$CURRENT_VERSION" ]]; then
+              VERSION="$CURRENT_VERSION"
+              echo "explicit_version_change=YES" >> "$GITHUB_OUTPUT"
+              echo "auto_bump=NO" >> "$GITHUB_OUTPUT"
+            else
+              python3 scripts/bump-version.py --patch | tee bump.log
+              VERSION=$(python3 -c 'import re; print(re.search(r"::set-version::([^\s]+)", open("bump.log", encoding="utf-8").read()).group(1))')
+              rm bump.log
+              echo "explicit_version_change=NO" >> "$GITHUB_OUTPUT"
+              echo "auto_bump=YES" >> "$GITHUB_OUTPUT"
+            fi
+
+            echo "previous_version=${PREVIOUS_VERSION:-NOT_FOUND}" >> "$GITHUB_OUTPUT"
+          fi
+
+          VERSION="$VERSION" python3 - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          version = os.environ["VERSION"]
+          if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+              raise SystemExit(f"versao invalida: {version!r}")
+
+          plugin_version = json.loads(Path("plugin.json").read_text(encoding="utf-8"))["version"]
+          readme = Path("README.md").read_text(encoding="utf-8")
+          manual = Path("manual.html").read_text(encoding="utf-8")
+          manual_versions = set(re.findall(r"\bv(\d+\.\d+\.\d+)\b", manual))
+          expected = {
+              "plugin.json": plugin_version == version,
+              "README.md": (
+                  readme.splitlines()[0].endswith(f"v{version}")
+                  and f"v{version}](#react-dev-hub-plugin--antigravity-edition--v{version.replace('.', '')})" in readme
+              ),
+              "manual.html": manual_versions == {version},
+          }
+          failed = [name for name, ok in expected.items() if not ok]
+          if failed:
+              raise SystemExit("versao divergente em: " + ", ".join(failed))
+          PY
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Checagens proprias do pacote
         run: python3 scripts/validate-plugin.py
 
-      - name: Commitar e taguear
+      - name: Commitar bump automatico, se necessario
+        if: steps.version.outputs.auto_bump == 'YES'
         env:
-          V: ${{ steps.bump.outputs.version }}
+          V: ${{ steps.version.outputs.version }}
         run: |
           if git diff --quiet; then
-            echo "versao nao mudou, nada a commitar" >> "$GITHUB_STEP_SUMMARY"
-            exit 0
+            echo "erro: bump automatico nao alterou os arquivos" >&2
+            exit 1
           fi
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -64,13 +140,32 @@ jobs:
           git commit -m "chore(release): v$V
 
           Bump automatico da versao no plugin.json, README.md e manual.html."
-          git tag -f "v$V"
           git push
-          git push -f origin "v$V"
+
+      - name: Criar tag imutavel
+        env:
+          V: ${{ steps.version.outputs.version }}
+        run: |
+          TAG="v$V"
+          RELEASE_SHA=$(git rev-parse HEAD)
+          git fetch --tags origin
+
+          if git show-ref --verify --quiet "refs/tags/$TAG"; then
+            TAG_SHA=$(git rev-list -n 1 "$TAG")
+            if [[ "$TAG_SHA" != "$RELEASE_SHA" ]]; then
+              echo "erro: $TAG ja existe em $TAG_SHA, esperado $RELEASE_SHA" >&2
+              exit 1
+            fi
+            echo "$TAG ja existe no commit da release; nada a fazer" >> "$GITHUB_STEP_SUMMARY"
+          else
+            git tag -a "$TAG" -m "Release $V"
+            git push origin "$TAG"
+          fi
+
           {
             echo "### Publicado v$V"
             echo ""
             echo '```'
-            echo "agy plugin install https://github.com/victoralecrim11/plugin-react-dev-toolkit-antigravity.git"
+            echo "agy plugin install https://github.com/victoralecrim11/react-dev-toolkit-antigravity.git"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

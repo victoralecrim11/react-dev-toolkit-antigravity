@@ -42,8 +42,8 @@ caminhos do projeto do usuário.
   o nível; se o perfil não existir, aplique o fallback descrito em
   `references/dashboard-projetos.md`.
 - **Cada recomendação vem com motivo, alternativas e quando não usar.**
-- **Os guardrails de base já estão sempre ativos** em `rules/seguranca.md` e
-  `rules/typescript-estrito.md`, carregados pelo Antigravity em toda sessão.
+- **Os guardrails de base são normativos** em `rules/seguranca.md` e
+  `rules/typescript-estrito.md`; sua injeção inicial não é garantida no CLI 1.2.3.
   Eles definem o piso (nunca hardcodar segredo, validar no servidor, TS estrito);
   as referências abaixo aprofundam. Não os contradiga.
 

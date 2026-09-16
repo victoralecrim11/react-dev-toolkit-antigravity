@@ -8,6 +8,8 @@ user-invocable: false
 
 Roda uma vez por projeto.
 
+Em workflows STANDARD/COMPLEX, siga o Delegation Plan do project-orchestrator antes de scaffolding (contrato comportamental, sem hard enforcement). Em Design First agentic, a pesquisa pertence ao design-researcher e os artefatos canônicos ao design-director; use os procedimentos de UI/UX abaixo dentro desse ownership. Se o fluxo divergir, registre a violação, sem atribuir ao specialist conteúdo criado pelo Root.
+
 1. **Discovery & Arquitetura:** Leia o perfil e aplique `./skills/react-dev/references/project-builder.md` via Discovery.
 2. **Design System & UI/UX:** Invoque a skill `ui-ux` para executar o Fluxo de Operação completo (Reasoning & Handoff). Ela gerará o artefato `.design/design-system.md` na raiz do projeto com todos os tokens de paleta, tipografia, estilo visual, padrão de interface e acessibilidade. Leia esse arquivo para aplicar os tokens ao scaffolding. Se a skill `ui-ux` não estiver disponível, faça fallback para `python skills/ui-ux/scripts/search-uiux.py "<nicho/produto>" --domain product` e `--domain style`/`--domain color`/`--domain typography`. Aplique os padrões de `./skills/ui-ux/references/responsive-design.md`.
 3. **Scaffolding:** Crie a estrutura de diretórios e arquivos TypeScript estritos adequados à stack (Next.js, Vite ou Expo).

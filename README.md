@@ -1,15 +1,15 @@
-# React Dev Hub Plugin — Antigravity Edition — v1.4.1
+# React Dev Hub Plugin — Antigravity Edition — v1.5.0
 > Plugin de desenvolvimento orientado a aprendizado para planejar, construir, revisar, publicar e acompanhar projetos **React, Next.js e React Native/Expo** no **Google Antigravity**.
 
 Adaptacao do [plugin-react-dev-toolkit](https://github.com/victoralecrim11/plugin-react-dev-toolkit) para o formato nativo do Antigravity: `plugin.json` + `mcp_config.json` + `skills/` + `rules/` + camada agentica opcional.
 
-Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **framework GSD** cruzando os artefatos da pasta `.planning/` com o codigo real, a skill `auditar-seguranca`, que caca as brechas tipicas de codigo gerado rapido, e os **guardrails sempre ativos** de `rules/`, que previnem essas brechas antes de existirem.
+Inclui a skill `analisar-projeto-gsd`, que audita projetos construidos com o **framework GSD** cruzando os artefatos da pasta `.planning/` com o codigo real, a skill `auditar-seguranca`, que identifica brechas tipicas de codigo gerado rapido, e guardrails em `rules/`, cuja injeção inicial depende do runtime.
 
 ## Modelo Agentico
 
 A arquitetura do plugin preserva responsabilidades distintas:
 
-- `Rules` = guardrails permanentes (`seguranca`, `typescript-estrito`)
+- `Rules` = guardrails normativos (`seguranca`, `typescript-estrito`), sujeitos ao carregamento pelo runtime
 - `Skills` = procedimentos reutilizaveis (`ui-ux`, `arquitetura`, `review`, `criar-componente`)
 - `Root Runtime` = Runtime Delegator, Workflow State Host, Handoff Transport e Tool Proxy quando necessário
 - `Project Orchestrator` = Logical Planner, Classifier, Router e Phase Ownership Planner
@@ -50,7 +50,7 @@ Simple
 → Main Agent + Skill
 
 Standard
-→ Main Agent + Skills coordenadas
+→ Root → Project Orchestrator (planning) → Root + Skills coordenadas
 
 Complex
 → Root
@@ -68,11 +68,31 @@ O Root pode materializar um canonical output como `ROOT_PROXY` quando o runtime 
 ```text
 Artifact: DESIGN.md
 Logical Owner: design-director
-Content Author: design-director
+Original Content Author: design-director
+Final Content Author: design-director
 Runtime Delegator: Root Agent
 Tool Executor: Root Agent
-Tool Execution Topology: ROOT_PROXY
+Tool Execution Role: ROOT_PROXY
+Semantic Intervention: NONE
 ```
+
+`ROOT_PROXY` exige canonical output anterior do Logical Owner. Se o Root criar o conteúdo sozinho, registre `Final Content Author: Root Agent` e `Ownership Deviation: YES`. Prefira devolver erros ao owner para obter uma correção canônica; um patch semântico do Root exige `SEMANTIC INTERVENTION` com motivo, evidência, alterações e `Final Content Author: MIXED`.
+
+### Compliance e qualidade do produto
+
+Planner-First é um **NORMATIVE BEHAVIORAL CONTRACT** para STANDARD/COMPLEX: Root → project-orchestrator → Delegation Plan → execução. No Antigravity CLI 1.2.3 validado, `Planner Runtime Enforcement: UNAVAILABLE`. O plugin não promete bloqueio determinístico antes do planner.
+
+| Campo | Valores canônicos | Evidência considerada |
+| --- | --- | --- |
+| Planner Compliance | COMPLIANT / VIOLATED / NOT APPLICABLE / UNKNOWN | Planner executado antes dos side effects e plano utilizado; SIMPLE pode dispensá-lo |
+| Planner Runtime Enforcement | AVAILABLE / UNAVAILABLE / UNKNOWN | Capacidade real do runtime de impor a pré-condição |
+| Architecture Compliance | FULL / PARTIAL / VIOLATED / UNKNOWN | Contratos respeitados e violações documentadas |
+| Product Quality Status | READY / READY WITH WARNINGS / BLOCKED | Delivery Report e Quality Gate do quality-auditor |
+| Toolkit Compliance Status | COMPLIANT / PARTIAL / FAILED | Conformidade observada; violação conhecida impede COMPLIANT |
+
+Produto e compliance são independentes. Um produto pode estar `READY WITH WARNINGS` com Toolkit Compliance `PARTIAL` e Planner Compliance `VIOLATED`. Registre o primeiro side effect e as invocações reais, sem inventar um planner retroativo. Build Validation não é Quality Gate; QA, Review e Security precisam de evidência própria, e o quality-auditor apenas consolida o Delivery Report. Sem QA funcional relevante executado, use `QA: NOT EXECUTED`, mesmo que não existam testes automatizados.
+
+Limitações conhecidas desse runtime: Planner-First sem hard enforcement no plugin; nested delegation `NOT SUPPORTED`; `rules/` sem garantia de injeção inicial; hooks do plugin sem o gate determinístico necessário; emissão exata de enums generativa; execução de tools pelo Root como proxy; normalizações mecânicas de newline/encoding. Não generalize esses findings para outras versões.
 
 ### Design artifact relationship
 
@@ -118,7 +138,8 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
 
 ## Indice
 
-- [React Dev Hub Plugin — Antigravity Edition — v1.4.1](#react-dev-hub-plugin--antigravity-edition--v141)
+- [React Dev Hub Plugin — Antigravity Edition — v1.5.0](#react-dev-hub-plugin--antigravity-edition--v150)
+  - [Compliance e qualidade do produto](#compliance-e-qualidade-do-produto)
   - [Indice](#indice)
   - [Instalacao](#instalacao)
     - [Desinstalar](#desinstalar)
@@ -126,7 +147,7 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
   - [Como usar (linguagem natural)](#como-usar-linguagem-natural)
   - [Estrutura do plugin](#estrutura-do-plugin)
     - [O que cada pasta faz](#o-que-cada-pasta-faz)
-  - [Guardrails sempre ativos (`rules/`)](#guardrails-sempre-ativos-rules)
+  - [Guardrails normativos (`rules/`)](#guardrails-normativos-rules)
   - [Seguranca](#seguranca)
   - [Projetos feitos com o framework GSD](#projetos-feitos-com-o-framework-gsd)
   - [Atualizar depois de um push](#atualizar-depois-de-um-push)
@@ -136,7 +157,8 @@ Se a tarefa for bugfix, refactor técnico, backend ou correção de testes, o de
   - [Project Hub local](#project-hub-local)
     - [Onde ficam os dados](#onde-ficam-os-dados)
   - [Relacao com o repo original](#relacao-com-o-repo-original)
-- [O que mudou na v1.4.1](#o-que-mudou-na-v141)
+- [What changed in v1.5.0](#what-changed-in-v150)
+  - [O que mudou na v1.4.1](#o-que-mudou-na-v141)
   - [O que mudou na v1.3.5](#o-que-mudou-na-v135)
   - [O que mudou na v1.2.7](#o-que-mudou-na-v127)
   - [O que mudou na v1.2.6](#o-que-mudou-na-v126)
@@ -160,12 +182,12 @@ Copie a pasta do plugin para um dos locais que o Antigravity varre:
 Para instalacao inicial, use:
 
 ```shell
-agy plugin install https://github.com/victoralecrim11/react-dev-toolkit-antigravity.git
+agy plugin install https://github.com/victoralecrim11/plugin-react-dev-toolkit-antigravity.git
 ```
 
 > Se a pasta `~/.gemini/config/plugins/` nao existir ainda, crie ela.
 
-As skills e as rules carregam sozinhas — nao precisa copiar nada manualmente.
+O runtime descobre as skills instaladas. A injeção de rules de plugin no contexto inicial não é garantida no CLI 1.2.3.
 
 ### Desinstalar
 
@@ -238,7 +260,7 @@ react-dev-toolkit-antigravity/
 ├── .github/
 │   └── workflows/
 │       └── bump-version.yml
-├── commands/                        # paridade com a versao original; o Antigravity NAO usa
+├── commands/                        # o instalador do CLI 1.2.3 converte em skills
 │   ├── analisar-projeto-gsd.md
 │   ├── arquitetura.md
 │   ├── auditar-seguranca.md
@@ -249,7 +271,7 @@ react-dev-toolkit-antigravity/
 │   ├── gerar-midia.md
 │   ├── review.md
 │   └── setup.md
-├── rules/                           # guardrails SEMPRE ativos
+├── rules/                           # guardrails normativos; carregamento depende do runtime
 │   ├── seguranca.md
 │   └── typescript-estrito.md
 ├── scripts/
@@ -291,26 +313,26 @@ react-dev-toolkit-antigravity/
 
 ### O que cada pasta faz
 
-**`rules/`** — carregada em toda sessao pelo Antigravity, sem precisar de gatilho. Define o piso de comportamento (ver secao abaixo).
+**`rules/`** — define guardrails normativos. No CLI 1.2.3, sua presença no plugin não garante injeção no contexto inicial do Root.
 
 **`skills/`** — o que o Antigravity usa como ponto de entrada. Cada `SKILL.md` tem `name` e `description` no frontmatter; a `description` e o que faz o agente escolher a skill a partir do que voce escreve. As skills de entrada sao curtas de proposito e delegam o metodo detalhado para os arquivos de referencia do plugin, carregados sob demanda. Isso mantem o contexto enxuto.
 
-**`commands/`** — nao e lido pelo Antigravity (que nao tem slash-commands). Existe para manter paridade textual com o repo original, servindo de referencia ao portar mudancas entre as duas versoes. O `validate-plugin.py` valida o frontmatter desses arquivos, mas eles nao afetam o comportamento do plugin no Antigravity.
+**`commands/`** — mantém paridade com o repo original. O instalador do CLI 1.2.3 validado processa estes arquivos e informa conversão em skills; o validator também verifica seu frontmatter. Não presuma que sejam apenas documentação.
 
-## Guardrails sempre ativos (`rules/`)
+## Guardrails normativos (`rules/`)
 
-Diferente das skills, que precisam ser acionadas, as **rules valem em toda sessao**. Sao restricoes, nao sugestoes: aplicam mesmo quando voce nao pediu revisao nenhuma.
+As rules descrevem restrições esperadas durante a execução. Sua aplicação depende do contexto efetivamente carregado; não constituem um bloqueio determinístico no CLI 1.2.3.
 
 - **`rules/seguranca.md`** — proibe hardcodar segredo, por chave em `NEXT_PUBLIC_`/`EXPO_PUBLIC_`, montar query por concatenacao, usar `dangerouslySetInnerHTML` com entrada do usuario e guardar token em `localStorage`/`AsyncStorage`. Exige validar e autorizar no servidor e checar propriedade em acesso por id. Se encontrar uma brecha, o agente avisa na hora, mesmo que a tarefa em curso seja outra.
 - **`rules/typescript-estrito.md`** — TypeScript estrito obrigatorio, sem `any` para calar o compilador, componentes funcionais e Hooks, Zustand so para estado global mutavel, TanStack Query para dados remotos, e o `devLevel` como teto de complexidade arquitetural.
 
-A ideia e simples: **prevenir a brecha vale mais do que audita-la depois**. As rules seguram o piso enquanto o codigo esta sendo escrito; a skill `auditar-seguranca` faz a varredura profunda quando voce pede.
+A skill `auditar-seguranca` faz a varredura dedicada. A existência de uma rule não substitui evidência de auditoria.
 
 ## Seguranca
 
 Tres camadas, em ordem de atuacao:
 
-1. **`rules/seguranca.md`** — sempre ativa, previne durante a escrita do codigo.
+1. **`rules/seguranca.md`** — orientação preventiva quando carregada no contexto.
 2. **skill `review`** — todo code review inclui uma passada de seguranca de primeira linha.
 3. **skill `auditar-seguranca`** — a auditoria dedicada. Percorre segredos e variaveis de ambiente, dependencias (`npm audit`), XSS, injecao e SSRF, autenticacao e autorizacao, Server Actions e route handlers do Next, especificidades de Expo, e exposicao de dados e transporte.
 
@@ -347,11 +369,8 @@ O workflow valida antes de taguear. Para pular o bump num commit so de documenta
 ### Atualizar o plugin
 
 ```shell
-# Atualizar este plugin
-agy plugin update react-dev-toolkit-antigravity
-
-# Atualizar todos os plugins
-agy plugin update --all
+# Reinstalar a versão publicada (CLI 1.2.3)
+agy plugin install https://github.com/victoralecrim11/plugin-react-dev-toolkit-antigravity.git
 ```
 
 Ou use os scripts auxiliares na maquina:
@@ -375,7 +394,7 @@ Se algo ficar preso numa versao antiga, `--limpar-cache` remove o plugin instala
 - **Next.js** — App Router, Server Components, Server Actions.
 - **React Native/Expo** — Expo managed, Expo Router, Hermes, Reanimated.
 
-Esses padroes nao sao apenas documentacao: estao codificados em `rules/typescript-estrito.md` e valem em toda sessao.
+Esses padrões estão documentados em `rules/typescript-estrito.md`; a conformidade deve ser verificada por evidência da execução.
 
 ## Arquitetura que evolui com o projeto
 
@@ -413,13 +432,22 @@ Este repo e uma adaptacao do [plugin-react-dev-toolkit](https://github.com/victo
 | MCP | formato legacy de configuração | `mcp_config.json` (`serverUrl`) |
 | Acionamento | `commands/` (slash-commands prefixados) | `skills/` (linguagem natural) |
 | Skills | 1 skill `react-dev` com `references/` | 11 skills (1 base + 10 entry points) |
-| Guardrails sempre ativos | nao tem equivalente | `rules/` (2 arquivos) |
+| Guardrails normativos | nao tem equivalente | `rules/` (2 arquivos; carregamento dependente do runtime) |
 | Referencias | 9 arquivos em `references/` | os mesmos arquivos-base, incluindo `security-review.md` |
 | Caminho das referencias | plugin root legacy | `./skills/...` (relativo ao plugin) |
 | Bump | manifestos adicionais + docs | `plugin.json` + README + manual |
 | Caminho global | plugin cache antigo | `~/.gemini/config/plugins/` |
 
 > O `manual.html` deste repo ainda e a copia herdada do repo original e mostra os comandos no formato slash legado. Como o Antigravity usa linguagem natural, use a tabela da secao [Como usar](#como-usar-linguagem-natural) como referencia canonica de acionamento.
+
+<a id="what-changed-in-v150"></a>
+## What changed in v1.5.0
+
+- Planner Compliance, Planner Runtime Enforcement e Architecture Compliance passam a registrar conformidade observada e capacidade real do runtime separadamente.
+- Product Quality Status e Toolkit Compliance Status são independentes: violação agentic documentada não bloqueia automaticamente um produto válido e nunca equivale a compliance total.
+- Planner-First permanece contrato comportamental normativo; os limites conhecidos do Antigravity CLI 1.2.3 são explícitos, sem promessa de hard enforcement.
+- Preservados `ROOT_ROUTED`, `ROOT_PROXY` e o ownership model, com autoria original/final e intervenção semântica rastreáveis.
+- Quality Auditor consolida evidências do Delivery Report sem substituir QA, Review, Security ou Build Validation.
 
 <a id="o-que-mudou-na-v141"></a>
 ## O que mudou na v1.4.1

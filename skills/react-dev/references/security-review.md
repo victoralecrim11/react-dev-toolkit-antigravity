@@ -1,6 +1,6 @@
 # Security Review
 
-Use esta referência para auditorias de segurança em projetos React, Next.js e React Native/Expo. Ela aprofunda os guardrails sempre ativos de `rules/seguranca.md` e deve ser usada pela skill `auditar-seguranca` e pela passada de segurança do `review`.
+Use esta referência para auditorias de segurança em projetos React, Next.js e React Native/Expo. Ela aprofunda os guardrails normativos de `rules/seguranca.md` e deve ser usada pela skill `auditar-seguranca` e pela passada de segurança do `review`.
 
 Calibre a explicação pelo `devLevel` lido em `dashboard-config.json` (`GET /api/config`). A calibração muda a didática, não o rigor: uma falha crítica continua crítica para qualquer nível.
 

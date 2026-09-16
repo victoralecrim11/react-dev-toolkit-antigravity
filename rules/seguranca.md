@@ -1,6 +1,6 @@
 # Regra: seguranca por padrao
 
-Restricoes sempre ativas ao escrever ou alterar codigo de projetos React, Next.js e Expo. Sao limites, nao sugestoes: valem mesmo quando o usuario nao pediu uma auditoria. Para a auditoria completa e a classificacao por severidade, use a skill `auditar-seguranca`.
+Restricoes normativas ao escrever ou alterar codigo de projetos React, Next.js e Expo, aplicáveis quando carregadas no contexto. A injeção inicial de rules do plugin não é garantida no CLI 1.2.3. Para a auditoria completa e a classificacao por severidade, use a skill `auditar-seguranca`.
 
 ## Nunca faca
 
